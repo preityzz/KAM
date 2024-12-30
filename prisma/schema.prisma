@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isVerified Boolean  @default(false)
+}
+
+model Restaurant {
+  id           Int           @id @default(autoincrement())
+  name         String
+  address      String
+  phone        String
+  status       String // E.g., "new", "contacted", "converted"
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  contacts     Contact[]
+  interactions Interaction[]
+  callPlan     CallPlan? // One-to-one: a restaurant can have one call plan
+  Performance  Performance?
+  orders       Order[] // One-to-many: a restaurant can have many orders
+}
+
+model Contact {
+  id           Int        @id @default(autoincrement())
+  name         String
+  role         String // E.g., "Owner", "Manager"
+  email        String?
+  phone        String
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
+model Interaction {
+  id              Int        @id @default(autoincrement())
+  interactionType String // e.g., "call", "order", "meeting"
+  details         String? // Optional details
+  interactionDate DateTime
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId    Int
+}
+
+model CallPlan {
+  id           Int        @id @default(autoincrement())
+  restaurantId Int        @unique
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  frequency    Int // Days between calls
+  lastCallDate DateTime?
+  nextCallDate DateTime
+}
+
+model Performance {
+  id               Int        @id @default(autoincrement())
+  restaurantId     Int        @unique
+  restaurant       Restaurant @relation(fields: [restaurantId], references: [id])
+  totalOrders      Int        @default(0)
+  lastOrder        DateTime?
+  performanceScore Float // Calculated metric
+  orders           Order[] // Relation to multiple orders
+}
+
+model Order {
+  id            Int          @id @default(autoincrement())
+  restaurantId  Int // Link to the restaurant
+  restaurant    Restaurant   @relation(fields: [restaurantId], references: [id])
+  orderDate     DateTime // Date and time when the order was placed
+  orderValue    Float // Total value of the order
+  orderStatus   String // E.g., "Pending", "Completed", "Shipped"
+  performanceId Int? // Link to performance (optional, if the order is part of a performance metric)
+  performance   Performance? @relation(fields: [performanceId], references: [id])
+}
