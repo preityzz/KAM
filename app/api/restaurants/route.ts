@@ -15,7 +15,6 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(restaurant);
-    
   } catch (error) {
     return NextResponse.json(
       { message: 'Error creating restaurant', error },

@@ -1,3 +1,4 @@
+'use client';
 import EmployeeForm from './employee-form';
 import PageContainer from '@/components/layout/page-container';
 

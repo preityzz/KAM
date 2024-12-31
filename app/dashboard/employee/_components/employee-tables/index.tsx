@@ -1,5 +1,4 @@
 'use client';
-
 import { DataTable } from '@/components/ui/table/data-table';
 import { columns } from '../employee-tables/columns';
 import { RestaurantLead } from '@/types/restaurant-type';

@@ -1,3 +1,4 @@
+'use client';
 import EmployeeViewPage from '../_components/employee-view-page';
 
 export const metadata = {

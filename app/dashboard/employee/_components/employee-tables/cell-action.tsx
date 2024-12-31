@@ -1,6 +1,13 @@
 'use client';
-import { useDeleteRestaurant } from '@/app/queries/restaurants';
+
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,63 +16,68 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { RestaurantLead } from '@/types/restaurant-type';
-import { Edit, MoreHorizontal, Trash } from 'lucide-react';
+import { Edit, MoreHorizontal, Trash, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useDeleteRestaurant } from '@/app/queries/restaurants';
 import { toast } from 'sonner';
+import { EditForm } from './edit-form';
+import { useState } from 'react';
 
 interface CellActionProps {
   data: RestaurantLead;
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+export function CellAction({ data }: CellActionProps) {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const { mutate: deleteRestaurant } = useDeleteRestaurant();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const { mutate: deleteRestaurant, isPending: isDeleting } =
+    useDeleteRestaurant();
 
-  const onConfirm = async () => {
-    setIsDeleting(true);
-    await deleteRestaurant(data.id, {
-      onSuccess: () => {
-        toast.success('Restaurant deleted successfully');
-      },
-      onError: () => {
-        toast.error('Something went wrong');
-      },
-      onSettled: () => {
-        setIsDeleting(false);
-      }
+  const onConfirm = () => {
+    deleteRestaurant(data.id, {
+      onSuccess: () => toast.success('Restaurant deleted'),
+      onError: () => toast.error('Failed to delete')
     });
   };
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0" disabled={isDeleting}>
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/employee/${data.id}`)}
-            disabled={isDeleting}
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={onConfirm}
-            disabled={isDeleting}
-            className="text-red-600"
-          >
-            <Trash className="mr-2 h-4 w-4" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Restaurant</DialogTitle>
+            </DialogHeader>
+            <EditForm initialData={data} onClose={() => setOpen(false)} />
+          </DialogContent>
+        </Dialog>
+        <DropdownMenuItem
+          onClick={onConfirm}
+          disabled={isDeleting}
+          className="text-red-600"
+        >
+          <Trash className="mr-2 h-4 w-4" />
+          Delete
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push(`/dashboard/employee/pocs/${data.id}`)}
+        >
+          <Users className="mr-2 h-4 w-4" />
+          POCs
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
-};
+}

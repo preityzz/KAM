@@ -1,12 +1,6 @@
-
-
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type {
-  RestaurantLead,
-  APIError
-} from '@/types/restaurant-type';
+import type { RestaurantLead, APIError } from '@/types/restaurant-type';
 
 const API_URL = '/api/restaurants';
 
@@ -14,8 +8,6 @@ export const QUERY_KEYS = {
   restaurants: ['restaurants'] as const,
   restaurant: (id: number) => ['restaurants', id] as const
 };
-
-
 
 export const fetchPoc = async ({ id }: { id: number }) => {
   try {
@@ -110,19 +102,42 @@ export function useCreateRestaurant() {
   });
 }
 
-export function useUpdateRestaurant() {
+// export function useUpdateRestaurant() {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: updateRestaurant,
+//     onSuccess: (_, { id }) => {
+//       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.restaurants });
+//       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.restaurant(id) });
+//       toast.success('Restaurant updated successfully');
+//     },
+//     onError: () => toast.error('Failed to update restaurant')
+//   });
+// }
+
+export const useUpdateRestaurant = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateRestaurant,
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.restaurants });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.restaurant(id) });
-      toast.success('Restaurant updated successfully');
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/restaurants/${data.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update restaurant');
+      }
+
+      return response.json();
     },
-    onError: () => toast.error('Failed to update restaurant')
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+    }
   });
-}
+};
 
 export function useDeleteRestaurant() {
   const queryClient = useQueryClient();

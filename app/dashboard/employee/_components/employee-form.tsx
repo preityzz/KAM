@@ -1,9 +1,7 @@
 'use client';
-
-import * as React from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -52,14 +50,14 @@ export default function EmployeeForm() {
       name: '',
       address: '',
       phone: '',
-      status: undefined
+      status: 'pending'
     }
   });
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = (data: FormValues) => {
     addRestaurant(
       {
-        ...values,
+        ...data,
         id: 0,
         email: '',
         assignedKAM: '',
@@ -69,8 +67,9 @@ export default function EmployeeForm() {
         onSuccess: () => {
           toast.success('Restaurant added successfully');
           router.push('/dashboard/employee');
+          router.refresh();
         },
-        onError: () => {
+        onError: (error) => {
           toast.error('Failed to add restaurant');
         }
       }
@@ -78,13 +77,13 @@ export default function EmployeeForm() {
   };
 
   return (
-    <Card className="mx-auto w-full">
-      <CardHeader>
-        <CardTitle className="text-left text-2xl font-bold">
-          Add Restaurant
+    <Card className="mx-auto max-w-2xl shadow-lg">
+      <CardHeader className="space-y-2 border-b pb-6">
+        <CardTitle className="text-3xl font-bold text-primary">
+          Add New Restaurant
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -92,73 +91,107 @@ export default function EmployeeForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Restaurant Name</FormLabel>
+                  <FormLabel className="text-lg font-semibold">
+                    Restaurant Name
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter restaurant name" {...field} />
+                    <Input
+                      {...field}
+                      placeholder="Enter restaurant name..."
+                      className="h-11 text-base"
+                      disabled={isPending}
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel className="text-lg font-semibold">
+                    Address
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter address" {...field} />
+                    <Input
+                      {...field}
+                      placeholder="Enter address..."
+                      className="h-11 text-base"
+                      disabled={isPending}
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter phone number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold">
+                      Phone Number
+                    </FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
+                      <Input
+                        {...field}
+                        placeholder="Enter phone number..."
+                        className="h-11 text-base"
+                        disabled={isPending}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isPending}>
+                    <FormMessage className="text-sm" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold">
+                      Status
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={isPending}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-11 text-base">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-sm" />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="mt-6 h-11 w-full bg-primary text-base font-semibold hover:bg-primary/90"
+              disabled={isPending}
+            >
               {isPending ? (
-                <>
+                <div className="flex items-center justify-center">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Adding...
-                </>
+                  <span>Adding Restaurant...</span>
+                </div>
               ) : (
-                'Submit'
+                'Add Restaurant'
               )}
             </Button>
           </form>
