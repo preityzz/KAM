@@ -19,7 +19,10 @@ import * as z from 'zod';
 import GithubSignInButton from './github-auth-button';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Enter a valid email address' })
+  email: z.string().email({ message: 'Enter a valid email address' }),
+  password: z
+    .string()
+    .min(4, { message: 'Password must be at least 6 characters long' })
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
@@ -29,7 +32,8 @@ export default function UserAuthForm() {
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: 'demo@gmail.com'
+    email: 'admin@example.com',
+    password: '1234'
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
@@ -37,12 +41,24 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    startTransition(() => {
-      signIn('credentials', {
-        email: data.email,
-        callbackUrl: callbackUrl ?? '/dashboard'
-      });
-      toast.success('Signed In Successfully!');
+    startTransition(async () => {
+      try {
+        const result = await signIn('credentials', {
+          email: data.email,
+          password: data.password,
+          redirect: false,
+          callbackUrl: callbackUrl ?? '/dashboard'
+        });
+
+        if (result?.error) {
+          toast.error("Credentials don't match");
+        } else {
+          toast.success('Signed In Successfully!');
+          window.location.href = callbackUrl ?? '/dashboard';
+        }
+      } catch (error) {
+        toast.error('An unexpected error occurred.');
+      }
     });
   };
 
@@ -71,7 +87,24 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Enter your password..."
+                    disabled={loading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button disabled={loading} className="ml-auto w-full" type="submit">
             Continue With Email
           </Button>

@@ -31,10 +31,8 @@ import {
 } from '@/components/ui/sidebar';
 import { navItems } from '@/constants/data';
 import {
-
   ChevronRight,
   ChevronsUpDown,
- 
   GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
@@ -43,6 +41,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
+import { signOut } from 'next-auth/react';
 
 export const company = {
   name: 'Udaan Inc',
@@ -188,8 +187,11 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut />
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>

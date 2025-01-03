@@ -24,6 +24,7 @@ export default function Providers({
          }
        })
    );
+   
   return (
     <>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

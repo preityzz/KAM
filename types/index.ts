@@ -48,6 +48,13 @@ export interface RestaurantData {
   createdAt: string;
   updatedAt: string;
 }
+export interface Order {
+  id: string;
+  restaurant: string;
+  orderDate: string;
+  orderStatus: string;
+  orderValue: number;
+}
 
 export interface RestaurantLead
   extends Omit<RestaurantData, 'createdAt' | 'updatedAt'> {

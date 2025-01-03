@@ -1,52 +1,145 @@
+// 'use client';
+
+// import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+// import { AlertCircle, Loader2 } from 'lucide-react';
+// import { useOrders } from '@/app/queries/order';
+// import { useRestaurants } from '@/app/queries/restaurants';
+// import { format } from 'date-fns';
+// import { useSession } from 'next-auth/react';
+
+// export default function NonPerformingRestaurants() {
+//   const { data: session } = useSession();
+//   const userId = session?.user?.id;
+
+//   const { data: restaurants = [], isLoading: restaurantsLoading } =
+//     useRestaurants(userId);
+//   const { data: orders = [], isLoading: ordersLoading } = useOrders(
+//     userId || ''
+//   );
+
+//   if (restaurantsLoading || ordersLoading) {
+//     return (
+//       <div className="flex h-[200px] items-center justify-center">
+//         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+//       </div>
+//     );
+//   }
+
+//   const nonPerforming = restaurants
+//     .map((restaurant) => ({
+//       ...restaurant,
+//       lastOrderDate:
+//         orders.find((order) => order.restaurantId === restaurant.id)
+//           ?.orderDate || null
+//     }))
+//     .filter((restaurant) => !restaurant.lastOrderDate)
+//     .slice(0, 5);
+
+//   if (!nonPerforming?.length) {
+//     return (
+//       <div className="text-center text-muted-foreground">
+//         No non-performing restaurants found
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="space-y-4">
+//       {nonPerforming.map((restaurant) => (
+//         <Alert key={restaurant.id} variant="destructive">
+//           <AlertCircle className="h-4 w-4" />
+//           <AlertTitle className="font-semibold">{restaurant.name}</AlertTitle>
+//           <AlertDescription className="mt-2">
+//             <div className="flex flex-col space-y-1 text-sm">
+//               <span>Status: Inactive</span>
+//               <span>Total Orders: 0</span>
+//               <span>Last Activity: No activity recorded</span>
+//             </div>
+//           </AlertDescription>
+//         </Alert>
+//       ))}
+//     </div>
+//   );
+// }
 'use client';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useOrders } from '@/app/queries/order';
 import { useRestaurants } from '@/app/queries/restaurants';
-import { format } from 'date-fns';
+import { useSession } from 'next-auth/react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
 
 export default function NonPerformingRestaurants() {
-  const { data: orders } = useOrders();
-  const { data: restaurants } = useRestaurants();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
+  const { data: restaurants = [], isLoading: restaurantsLoading } =
+    useRestaurants(userId);
+  const { data: orders = [], isLoading: ordersLoading } = useOrders(
+    userId || ''
+  );
+
+  if (restaurantsLoading || ordersLoading) {
+    return (
+      <div className="flex h-[200px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   const nonPerforming = restaurants
-    ?.map((restaurant) => ({
+    .map((restaurant) => ({
       ...restaurant,
       lastOrderDate:
-        orders?.find((order) => order.restaurant?.id === restaurant.id)
+        orders.find((order) => order.restaurantId === restaurant.id)
           ?.orderDate || null
     }))
-    .filter((restaurant) => {
-      const restaurantOrders =
-        orders?.filter((order) => order.restaurant?.id === restaurant.id) || [];
-      return restaurant.status === 'inactive' && restaurantOrders.length === 0;
-    });
+    .filter((restaurant) => !restaurant.lastOrderDate)
+    .slice(0, 5);
+
+  if (!nonPerforming?.length) {
+    return (
+      <Alert className="bg-green-50 text-green-600">
+        <ExclamationTriangleIcon className="h-4 w-4" />
+        <AlertTitle>All Restaurants Active</AlertTitle>
+        <AlertDescription>
+          All restaurants are performing well.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {nonPerforming?.map((restaurant) => (
-        <Alert key={restaurant.id} variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="font-semibold">{restaurant.name}</AlertTitle>
-          <AlertDescription className="mt-2">
-            <div className="flex flex-col space-y-1 text-sm">
-              <span>Status: {restaurant.status}</span>
-              <span>Total Orders: 0</span>
-              <span>
-                Last Activity:{' '}
-                {restaurant.lastOrderDate
-                  ? format(new Date(restaurant.lastOrderDate), 'PPP')
-                  : 'No activity recorded'}
-              </span>
+      {nonPerforming.map((restaurant) => (
+        <Card
+          key={restaurant.id}
+          className="border-l-4 border-l-red-500 bg-red-50"
+        >
+          <CardContent className="flex items-center justify-between p-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />
+                <p className="font-medium text-red-700">{restaurant.name}</p>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-red-600">
+                <Badge variant="outline" className="border-red-200 bg-red-100">
+                  Inactive
+                </Badge>
+                <span>•</span>
+                <span>No Orders</span>
+                <span>•</span>
+                <span>Last Activity: Never</span>
+              </div>
             </div>
-          </AlertDescription>
-        </Alert>
+            <Badge variant="destructive" className="text-xs">
+              Requires Attention
+            </Badge>
+          </CardContent>
+        </Card>
       ))}
-      {!nonPerforming?.length && (
-        <div className="text-center text-muted-foreground">
-          No non-performing restaurants found
-        </div>
-      )}
     </div>
   );
 }

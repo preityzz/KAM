@@ -9,7 +9,8 @@ import OrderTable from './order-table';
 import { Order } from './order-table/columns';
 
 export default function OrderListingPage() {
-  const { data: ordersData, isLoading } = useOrders();
+  const userId = '3';
+  const { data: ordersData, isLoading } = useOrders(userId);
 
   const formattedOrders: Order[] =
     ordersData?.map((order) => ({
@@ -30,7 +31,7 @@ export default function OrderListingPage() {
     return (
       <PageContainer>
         <div className="flex min-h-screen items-center justify-center">
-          <Loader className="h-8 w-8 animate-spin text-primary" />
+          <Loader className="h-8 w-8 animate-spin  text-[#084C61]" />
         </div>
       </PageContainer>
     );

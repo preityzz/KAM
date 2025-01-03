@@ -1,33 +1,64 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { NextRequest } from 'next/server';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { restaurantId: string } }
 ) {
-  const { restaurantId } = req.query;
+  const { restaurantId } = params;
+  const userId = req.nextUrl.searchParams.get('userId');
 
-  if (req.method === 'GET') {
-    if (!restaurantId) {
-      return res.status(400).json({ error: 'Restaurant ID is required' });
-    }
+  if (!restaurantId || isNaN(Number(restaurantId))) {
+    return NextResponse.json(
+      { message: 'Invalid or missing restaurantId' },
+      { status: 400 }
+    );
+  }
 
-    try {
-      const callPlan = await prisma.callPlan.findUnique({
-        where: { restaurantId: Number(restaurantId) }
-      });
+  if (!userId) {
+    return NextResponse.json(
+      { message: 'User ID is required' },
+      { status: 400 }
+    );
+  }
 
-      if (callPlan) {
-        res.status(200).json(callPlan);
-      } else {
-        res
-          .status(404)
-          .json({ error: 'Call plan not found for this restaurant' });
+  try {
+    // Verify restaurant belongs to user
+    const restaurant = await prisma.restaurant.findFirst({
+      where: {
+        id: parseInt(restaurantId),
+        userId: parseInt(userId)
       }
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to retrieve call plan' });
+    });
+
+    if (!restaurant) {
+      return NextResponse.json(
+        { message: 'Restaurant not found or unauthorized' },
+        { status: 404 }
+      );
     }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+
+    const callPlans = await prisma.callPlan.findFirst({
+      where: {
+        restaurantId: parseInt(restaurantId),
+        restaurant: {
+          userId: parseInt(userId)
+        }
+      },
+      include: {
+        restaurant: true
+      }
+    });
+
+    return NextResponse.json({
+      message: 'Call plans fetched successfully',
+      callPlans
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'Error fetching call plans', error },
+      { status: 500 }
+    );
   }
 }

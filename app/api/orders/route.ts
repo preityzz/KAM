@@ -1,58 +1,89 @@
+
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // Adjust the path to your prisma client file
+import prisma from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
-    const { restaurantId, orderDate, orderValue, orderStatus, performanceId } =
+    const { restaurantId, orderDate, orderValue, orderStatus } =
       await request.json();
 
+    // Validate required fields
     if (!restaurantId || !orderDate || !orderValue || !orderStatus) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { message: 'All fields are required' },
         { status: 400 }
       );
     }
 
-    // Create or update the order
+    // Verify restaurant exists and belongs to user
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId }
+    });
+
+    if (!restaurant) {
+      return NextResponse.json(
+        { message: 'Restaurant not found' },
+        { status: 404 }
+      );
+    }
+
     const order = await prisma.order.create({
       data: {
-        restaurant: { connect: { id: restaurantId } },
-        orderDate,
-        orderValue,
-        orderStatus,
-        performance: performanceId
-          ? {
-              connect: { id: performanceId }
-            }
-          : undefined
+        restaurantId,
+        orderDate: new Date(orderDate),
+        orderValue: parseFloat(orderValue),
+        orderStatus
+      },
+      include: {
+        restaurant: true
       }
     });
 
-    return NextResponse.json(order, { status: 201 });
+    return NextResponse.json({
+      message: 'Order created successfully',
+      order
+    });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Something went wrong while creating/updating the order' },
+      { message: 'Error creating order', error },
       { status: 500 }
     );
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
     const orders = await prisma.order.findMany({
-      orderBy: { orderDate: 'desc' },
+      where: {
+        restaurant: {
+          userId: parseInt(userId)
+        }
+      },
       include: {
-        restaurant: true,
-        performance: true
+        restaurant: true
+      },
+      orderBy: {
+        orderDate: 'desc'
       }
     });
+
     return NextResponse.json({
       message: 'Orders fetched successfully',
-      data: orders
+      orders
     });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Something went wrong while fetching orders' },
+      { message: 'Error fetching orders', error },
       { status: 500 }
     );
   }

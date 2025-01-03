@@ -1,11 +1,12 @@
 'use client';
-import EmployeeForm from './employee-form';
+
+import RestaurantLeadForm from './Lead-form';
 import PageContainer from '@/components/layout/page-container';
 
-export default function EmployeeViewPage() {
+export default function RestaurantLeadViewPage() {
   return (
     <PageContainer>
-      <EmployeeForm />
+      <RestaurantLeadForm />
     </PageContainer>
   );
 }

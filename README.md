@@ -1,7 +1,12 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/9113740/201498864-2a900c64-d88f-4ed4-b5cf-770bcb57e1f5.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/9113740/201498152-b171abb8-9225-487a-821c-6ff49ee48579.png">
-</picture>
+{
+  "id": 3,
+  "email": "admin@example.com",
+  "password": "$2b$10$hashedPasswordHere",
+  "role": "ADMIN",
+  "createdAt": "2023-09-28T00:00:00.000Z",
+  "updatedAt": "2023-09-28T00:00:00.000Z",
+  "isVerified": true
+}
 
 <div align="center"><strong>Next.js Admin Dashboard Starter Template With Shadcn-ui</strong></div>
 <div align="center">Built with the Next.js App Router</div>
@@ -13,39 +18,116 @@
 
 ## Overview
 
-This is a starter template using the following stack:
+Cloud-based CRM solution built with Next.js 14, featuring:
+- Lead Management & Tracking
+- Call Planning System
+- Performance Analytics
+- Admin Dashboard
 
-- Framework - [Next.js (14 | 15) ](https://nextjs.org/13)
+## Tech Stack
+- Framework - [Next.js 14](https://nextjs.org/)
 - Language - [TypeScript](https://www.typescriptlang.org)
+- Database ORM - [Prisma](https://www.prisma.io)
+- Auth - [NextAuth.js](https://next-auth.js.org)
+- UI Components - [Shadcn/ui](https://ui.shadcn.com)
 - Styling - [Tailwind CSS](https://tailwindcss.com)
-- Components - [Shadcn-ui](https://ui.shadcn.com)
+- Forms - [React Hook Form](https://react-hook-form.com)
+- Validation - [Zod](https://zod.dev)
+- Data Tables - [TanStack Table](https://tanstack.com/table)
+- Charts - [Chart.js](https://www.chartjs.org)
+- State Management - [TanStack Query](https://tanstack.com/query)
+- Database Client - [Prisma Client](https://www.prisma.io/client)
 - Schema Validations - [Zod](https://zod.dev)
-- State Management - [Zustand](https://zustand-demo.pmnd.rs)
 - Search params state manager - [Nuqs](https://nuqs.47ng.com/)
 - Auth - [Auth.js](https://authjs.dev/)
-- Tables - [Tanstack Tables](https://ui.shadcn.com/docs/components/data-table)
-- Forms - [React Hook Form](https://ui.shadcn.com/docs/components/form)
 - Command+k interface - [kbar](https://kbar.vercel.app/)
 - Linting - [ESLint](https://eslint.org)
-- Pre-commit Hooks - [Husky](https://typicode.github.io/husky/)
 - Formatting - [Prettier](https://prettier.io)
 
-_If you are looking for a React admin dashboard starter, here is the [repo](https://github.com/Kiranism/react-shadcn-dashboard-starter)._
+### Key Features:
+- Lead Management Dashboard
+- Call Planning & Tracking
+- Restaurant Performance Analytics
+- Sales Metrics Visualization
+- Admin Role Management
+- Responsive Design
+
+## System Requirements
+
+- Node.js 14 
+- pnpm v8 
+- Windows 10/11, macOS, or Linux
+- Visual Studio Code (recommended)
+
+
+## Installation Instructions
+1.Create installation section
+   # Install pnpm globally
+    npm install -g pnpm
+
+2.Setup Project
+  # Clone repository
+  git clone <repository-url>
+  cd restaurant-crm
+
+  # Install dependencies
+  pnpm install
+
+3.Environment Configuration
+  # Create .env file
+  copy .env.example .env
+
+  # Update .env with your values
+  DATABASE_URL="postgresql://..."
+  NEXTAUTH_SECRET="your-secret"
+  NEXTAUTH_URL="http://localhost:3000"
+
+4.Database Setup
+  # Generate Prisma client
+  pnpm prisma generate
+
+  # Push database schema
+  pnpm prisma db push
+
+  # Seed database (optional)
+  pnpm prisma db seed
+
+
+## Running Instructions
+  1.For Frontend 
+    pnpm run dev
+
+  2.Manage database content
+    pnpm prisma studio
+
+
+You should now be able to access the application at http://localhost:3000.
+
+## Test execution guide
+
+
+
+## API documentation
+
+
+
+## 
+
+  
+
 
 ## Pages
 
-| Pages                                                                                   | Specifications                                                                                                                      |
-| :-------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| [Signup](https://next-shadcn-dashboard-starter.vercel.app/)                             | Authentication with **NextAuth** supports Social logins and email logins (Enter dummy email for demo).                              |
-| [Dashboard](https://next-shadcn-dashboard-starter.vercel.app/dashboard)                 | Cards with recharts graphs for analytics.                                                                                           |
-| [Employee](https://next-shadcn-dashboard-starter.vercel.app/dashboard/employee)         | Tanstack tables with server side searching, filter, pagination by Nuqs which is a Type-safe search params state manager in nextjs). |
-| [Employee/new](https://next-shadcn-dashboard-starter.vercel.app/dashboard/employee/new) | A Employee Form with shadcn form (react-hook-form + zod).                                                                           |
-| [Product](https://next-shadcn-dashboard-starter.vercel.app/dashboard/product)           | Tanstack tables with server side searching, filter, pagination by Nuqs which is a Type-safe search params state manager in nextjs   |
-| [Product/new](https://next-shadcn-dashboard-starter.vercel.app/dashboard/product/new)   | A Product Form with shadcn form (react-hook-form + zod).                                                                            |
-| [Profile](https://next-shadcn-dashboard-starter.vercel.app/dashboard/profile)           | Mutistep dynamic forms using react-hook-form and zod for form validation.                                                           |
-| [Kanban Board](https://next-shadcn-dashboard-starter.vercel.app/dashboard/kanban)       | A Drag n Drop task management board with dnd-kit and zustand to persist state locally.                                              |
-| [Not Found](https://next-shadcn-dashboard-starter.vercel.app/dashboard/notfound)        | Not Found Page Added in the root level                                                                                              |
-| -                                                                                       | -                                                                                                                                   |
+| Pages | Specifications |
+| :--- | :--- |
+| [Login](/login) | Authentication with **NextAuth.js**, email/password login for admin access |
+| [Dashboard](/dashboard/overview) | Main dashboard with performance metrics, charts, and daily calls overview |
+| [Restaurants](/dashboard/restaurantLeads) | Restaurant lead management with TanStack table, filtering, and sorting |
+| [Restaurants/new](/dashboard/restaurantLeads/new) | New restaurant lead form using shadcn form with react-hook-form + zod validation |
+| [Call Plans](/dashboard/callPlans) | Call scheduling system with calendar view and status tracking |
+| [Interactions](/dashboard/interactions) | Create new call plans with restaurant selection and scheduling |
+| [Orders](dashboard/orders) | Detailed performance metrics, conversion rates, and sales analytics |
+| [Not Found](/dashboard/notfound) | Custom 404 error page with navigation assistance |                                                                                                                               |
 
 ## Getting Started
 

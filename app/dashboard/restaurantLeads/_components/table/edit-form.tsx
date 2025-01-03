@@ -1,3 +1,4 @@
+'use client'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -32,10 +33,9 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface EditFormProps {
   initialData: any;
-  onClose: () => void;
 }
 
-export function EditForm({ initialData, onClose }: EditFormProps) {
+export function EditForm({ initialData }: EditFormProps) {
   const { mutate: updateRestaurant, isPending } = useUpdateRestaurant();
 
   const form = useForm<FormValues>({
@@ -49,7 +49,6 @@ export function EditForm({ initialData, onClose }: EditFormProps) {
       {
         onSuccess: () => {
           toast.success('Updated successfully');
-          onClose();
         },
         onError: () => toast.error('Update failed')
       }

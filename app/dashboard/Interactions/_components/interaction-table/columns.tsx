@@ -15,6 +15,7 @@ export type Interaction = {
   details: string;
   status: 'pending' | 'completed' | 'scheduled';
   restaurant: Restaurant;
+  userId: number;
 };
 
 export const columns: ColumnDef<Interaction>[] = [
@@ -39,8 +40,22 @@ export const columns: ColumnDef<Interaction>[] = [
     header: 'InteractionType',
     cell: ({ row }) => {
       const type = row.getValue('interactionType') as string;
+      const badgeStyles =
+        {
+          call: 'bg-[#CED3DC] text-[#4A5568] hover:bg-[#BFC6D3] border-[#4A5568]',
+          email:
+            'bg-[#BFC6D3] text-[#4A5568] hover:bg-[#B0B9CA] border-[#4A5568]',
+          meeting:
+            'bg-[#B0B9CA] text-[#4A5568] hover:bg-[#A1ACC1] border-[#4A5568]',
+          other:
+            'bg-[#A1ACC1] text-[#4A5568] hover:bg-[#929FB8] border-[#4A5568]'
+        }[type] || 'bg-[#CED3DC] text-[#4A5568]';
+
       return (
-        <Badge variant="outline" className="capitalize">
+        <Badge
+          variant="outline"
+          className={`capitalize transition-colors ${badgeStyles}`}
+        >
           {type}
         </Badge>
       );

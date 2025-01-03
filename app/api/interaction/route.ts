@@ -1,66 +1,90 @@
+
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { interactionType, details, interactionDate, restaurantId } =
-      await req.json();
+    const { restaurantId, interactionType, details, interactionDate, userId } =
+      await request.json();
 
-    if (!interactionType || !interactionDate || !restaurantId) {
+    if (!restaurantId || !interactionType || !interactionDate || !userId) {
       return NextResponse.json(
-        {
-          message:
-            'Please provide interactionType, interactionDate, and restaurantId.'
-        },
+        { message: 'All fields are required' },
         { status: 400 }
       );
     }
 
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId }
+    const restaurant = await prisma.restaurant.findFirst({
+      where: {
+        id: restaurantId,
+        userId: parseInt(userId)
+      }
     });
 
     if (!restaurant) {
       return NextResponse.json(
-        { message: 'Restaurant not found.' },
+        { message: 'Restaurant not found or unauthorized' },
         { status: 404 }
       );
     }
 
-    // Create a new interaction
     const interaction = await prisma.interaction.create({
       data: {
+        restaurantId,
         interactionType,
-        details,
-        interactionDate: new Date(interactionDate),
-        restaurant: { connect: { id: restaurantId } }
+        details: details || '',
+        interactionDate: new Date(interactionDate)
+      },
+      include: {
+        restaurant: true
       }
     });
 
-    return NextResponse.json(interaction, { status: 201 });
+    return NextResponse.json({
+      message: 'Interaction created successfully',
+      interaction
+    });
   } catch (error) {
     return NextResponse.json(
-      { message: 'Error creating interaction', error: (error as any).message },
+      { message: 'Error creating interaction', error },
       { status: 500 }
     );
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
     const interactions = await prisma.interaction.findMany({
-      orderBy: { interactionDate: 'desc' },
+      where: {
+        restaurant: {
+          userId: parseInt(userId)
+        }
+      },
       include: {
         restaurant: true
+      },
+      orderBy: {
+        interactionDate: 'desc'
       }
     });
+
     return NextResponse.json({
-      message: 'interactions fetched successfully',
-      data: interactions
+      message: 'Interactions fetched successfully',
+      interactions
     });
   } catch (error) {
     return NextResponse.json(
-      { message: 'Error fetching interactions', error: (error as any).message },
+      { message: 'Error fetching interactions', error },
       { status: 500 }
     );
   }

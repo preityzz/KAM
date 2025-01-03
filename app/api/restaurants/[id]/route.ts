@@ -9,64 +9,41 @@ const restaurantSchema = z.object({
   status: z.enum(['active', 'pending', 'inactive'])
 });
 
-export async function GET({ params }: { params: { restaurantId: string } }) {
+export async function GET(request: Request) {
   try {
-    if (!params.restaurantId || isNaN(Number(params.restaurantId))) {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+
+    if (!userId) {
       return NextResponse.json(
-        { message: 'Invalid or missing restaurantId' },
+        { message: 'User ID is required' },
         { status: 400 }
       );
     }
-    const performance = await prisma.performance.findUnique({
-      where: { restaurantId: parseInt(params.restaurantId) }
+
+    const restaurants = await prisma.restaurant.findMany({
+      where: {
+        userId: parseInt(userId)
+      },
+      include: {
+        contacts: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
 
-    if (!performance) {
-      return NextResponse.json(
-        { message: 'Performance not found' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(performance);
+    return NextResponse.json({
+      message: 'Restaurants fetched successfully',
+      restaurants
+    });
   } catch (error) {
     return NextResponse.json(
-      { message: 'Error fetching performance', error },
+      { message: 'Error fetching restaurants' },
       { status: 500 }
     );
   }
 }
-
-// export async function PUT({
-//   params,
-//   request
-// }: {
-//   params: { restaurantId: string };
-//   request: Request;
-// }) {
-//   try {
-//     const { name, address, phone, status } = await request.json();
-//     if (!name || !address || !phone || !status) {
-//       return NextResponse.json(
-//         { message: 'All fields are required' },
-//         { status: 400 }
-//       );
-//     }
-//     // console.log('Restaurant ID:', params.restaurantId);
-
-//     const restaurant = await prisma.restaurant.update({
-//       where: { id: parseInt(params.restaurantId) },
-//       data: { name, address, phone, status }
-//     });
-
-//     return NextResponse.json(restaurant);
-//   } catch (error) {
-//     return NextResponse.json(
-//       { message: 'Error updating restaurant', error },
-//       { status: 500 }
-//     );
-//   }
-// }
 
 export async function DELETE(
   req: NextRequest,
@@ -113,12 +90,18 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { restaurantId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const body = await req.json();
     const validatedData = restaurantSchema.safeParse(body);
 
+    if (!params.id || isNaN(Number(params.id))) {
+      return NextResponse.json(
+        { error: 'Invalid restaurant ID' },
+        { status: 400 }
+      );
+    }
     if (!validatedData.success) {
       return NextResponse.json(
         { error: 'Validation failed', issues: validatedData.error.issues },
@@ -127,13 +110,12 @@ export async function PATCH(
     }
 
     const restaurant = await prisma.restaurant.update({
-      where: { id: parseInt(params.restaurantId) },
+      where: { id: parseInt(params.id) },
       data: validatedData.data
     });
 
     return NextResponse.json(restaurant);
   } catch (error) {
-    console.error('[RESTAURANT_UPDATE]', error);
     return NextResponse.json(
       { error: 'Failed to update restaurant' },
       { status: 500 }

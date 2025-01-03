@@ -1,12 +1,8 @@
 'use client';
-import BarGraph from './bar-graph';
 
-import PageContainer from '@/components/layout/page-container';
-import RecentSales from './non-performing';
 import { useRestaurants } from '@/app/queries/restaurants';
-import { useInteractions } from '@/app/queries/interaction';
 import { useOrders } from '@/app/queries/order';
-import { Users, Phone, ShoppingBag, TrendingUp } from 'lucide-react';
+import { Users, ShoppingBag, TrendingUp, Calendar } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -14,136 +10,167 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { useSession } from 'next-auth/react';
+import { TodayCalls } from './today-calls';
+import BarGraph from './bar-graph';
+import RecentSales from './non-performing';
+import PageContainer from '@/components/layout/page-container';
 
 export default function OverViewPage() {
-  const { data: restaurants, isLoading: isLoadingLeads } = useRestaurants();
-  const { data: interactions, isLoading: isLoadingCalls } = useInteractions();
-  const { data: orders, isLoading: isLoadingOrders } = useOrders();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
-  const totalLeads = restaurants?.length || 0;
-  const totalCalls =
-    interactions?.filter((i) => i.interactionType === 'call').length || 0;
-  const totalOrders = orders?.length || 0;
-  const conversionRate = totalLeads
-    ? ((totalOrders / totalLeads) * 100).toFixed(1)
+  const { data: restaurants = [], isLoading: isLoadingRestaurants } =
+    useRestaurants(userId || '');
+  const { data: orders = [], isLoading: isLoadingOrders } = useOrders(
+    userId || ''
+  );
+
+  if (!userId) {
+    return null;
+  }
+
+  const totalRestaurants = restaurants.length;
+  const totalOrders = orders.length;
+  interface Order {
+    orderValue: number;
+  }
+
+  const averageOrderValue: number = orders.length
+    ? orders.reduce((sum: number, order: Order) => sum + order.orderValue, 0) /
+      totalOrders
     : 0;
+
+  const conversionRate: number = totalRestaurants
+    ? parseFloat(((totalOrders / totalRestaurants) * 100).toFixed(1))
+    : 0;
+
   return (
-    <PageContainer scrollable>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Hi, Welcome back 👋
-          </h2>
+    <PageContainer>
+      <div className="flex min-h-screen flex-col gap-6 p-8">
+        {/* Header Section */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-[#084C61]">
+              Welcome back,{' '}
+              {session?.user?.email
+                ? session.user.email.split('@')[0]
+                : session?.user?.name || 'User'}{' '}
+              👋
+            </h2>
+            <p className="text-muted-foreground">
+              Here&apos;s what&apos;s happening with your restaurants today.
+            </p>
+          </div>
         </div>
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Leads
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  {isLoadingLeads ? (
-                    <div className="h-8 w-24 animate-pulse rounded bg-muted" />
-                  ) : (
-                    <>
-                      <div className="text-2xl font-bold">{totalLeads}</div>
-                      <p className="text-xs text-muted-foreground">
-                        Total restaurants in system
-                      </p>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Calls
-                  </CardTitle>
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  {isLoadingCalls ? (
-                    <div className="h-8 w-24 animate-pulse rounded bg-muted" />
-                  ) : (
-                    <>
-                      <div className="text-2xl font-bold">{totalCalls}</div>
-                      <p className="text-xs text-muted-foreground">
-                        Total call interactions
-                      </p>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+        {/* Key Metrics Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <MetricCard
+            title="Total Restaurants"
+            value={totalRestaurants}
+            description="Active restaurants in system"
+            icon={<Users className="h-4 w-4" />}
+            isLoading={isLoadingRestaurants}
+          />
+          <MetricCard
+            title="Total Orders"
+            value={totalOrders}
+            description="Total orders processed"
+            icon={<ShoppingBag className="h-4 w-4" />}
+            isLoading={isLoadingOrders}
+          />
+          <MetricCard
+            title="Average Order Value"
+            value={`$${averageOrderValue.toFixed(2)}`}
+            description="Per order average"
+            icon={<TrendingUp className="h-4 w-4" />}
+            isLoading={isLoadingOrders}
+          />
+          <MetricCard
+            title="Conversion Rate"
+            value={`${conversionRate}%`}
+            description="Orders per restaurant"
+            icon={<TrendingUp className="h-4 w-4" />}
+            isLoading={isLoadingOrders || isLoadingRestaurants}
+          />
+        </div>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Orders
-                  </CardTitle>
-                  <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  {isLoadingOrders ? (
-                    <div className="h-8 w-24 animate-pulse rounded bg-muted" />
-                  ) : (
-                    <>
-                      <div className="text-2xl font-bold">{totalOrders}</div>
-                      <p className="text-xs text-muted-foreground">
-                        Total orders processed
-                      </p>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+        {/* Analytics and Activity Section */}
+        <div className="grid gap-6 lg:grid-cols-7">
+          {/* Graph Section */}
+          <Card className="col-span-4">
+            <CardHeader>
+              <CardTitle>Restaurant Performance</CardTitle>
+              <CardDescription>Monthly order analysis</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BarGraph />
+            </CardContent>
+          </Card>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Conversion Rate
-                  </CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  {isLoadingLeads || isLoadingOrders ? (
-                    <div className="h-8 w-24 animate-pulse rounded bg-muted" />
-                  ) : (
-                    <>
-                      <div className="text-2xl font-bold">
-                        {conversionRate}%
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Orders to leads ratio
-                      </p>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <div className="col-span-4">
-                <BarGraph />
+          {/* Activity Feed */}
+          <Card className="col-span-3">
+            <CardHeader>
+              <CardTitle>Non-Performing Restaurants</CardTitle>
+              <CardDescription>Restaurants needing attention</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RecentSales />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Today's Calls Section */}
+        <div className="grid gap-6 lg:grid-cols-3">
+          <Card className="col-span-3">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Today&apos;s Call Schedule</CardTitle>
+                <CardDescription>Restaurants to contact today</CardDescription>
               </div>
-              <Card className="col-span-4 md:col-span-3">
-                <CardHeader>
-                  <CardTitle>Non-Performing Restaurants</CardTitle>
-                  <CardDescription>
-                    Restaurants with the least amount of orders
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <RecentSales />
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+              <Calendar className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <TodayCalls />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </PageContainer>
+  );
+}
+
+// Metric Card Component
+function MetricCard({
+  title,
+  value,
+  description,
+  icon,
+  isLoading
+}: {
+  title: string;
+  value: string | number;
+  description: string;
+  icon: React.ReactNode;
+  isLoading: boolean;
+}) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <div className="text-muted-foreground">{icon}</div>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="h-8 w-24 animate-pulse rounded bg-muted" />
+        ) : (
+          <>
+            <div className="text-2xl font-bold text-[#084C61]">{value}</div>
+            <p className="text-xs text-muted-foreground">{description}</p>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

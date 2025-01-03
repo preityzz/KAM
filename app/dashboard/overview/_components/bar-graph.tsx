@@ -1,158 +1,134 @@
-// 'use client';
-
-// import {
-//   Bar,
-//   BarChart,
-//   ResponsiveContainer,
-//   XAxis,
-//   YAxis,
-//   Tooltip,
-//   CartesianGrid
-// } from 'recharts';
-// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-// interface Restaurant {
-//   name: string;
-//   revenue: number;
-//   orders: number;
-// }
-
-// const data: Restaurant[] = [
-//   { name: 'Restaurant A', revenue: 45000, orders: 150 },
-//   { name: 'Restaurant B', revenue: 38000, orders: 120 },
-//   { name: 'Restaurant C', revenue: 35000, orders: 110 },
-//   { name: 'Restaurant D', revenue: 32000, orders: 100 },
-//   { name: 'Restaurant E', revenue: 28000, orders: 90 }
-// ];
-
-// export default function BarGraph() {
-//   return (
-//     <Card className="col-span-4">
-//       <CardHeader>
-//         <CardTitle>Top Performing Restaurants</CardTitle>
-//       </CardHeader>
-//       <CardContent className="pl-2">
-//         <ResponsiveContainer width="100%" height={350}>
-//           <BarChart data={data}>
-//             <XAxis
-//               dataKey="name"
-//               stroke="#888888"
-//               fontSize={12}
-//               tickLine={false}
-//               axisLine={false}
-//             />
-//             <YAxis
-//               stroke="#888888"
-//               fontSize={12}
-//               tickLine={false}
-//               axisLine={false}
-//               tickFormatter={(value) => `$${value}`}
-//             />
-//             <CartesianGrid
-//               strokeDasharray="3 3"
-//               vertical={false}
-//               className="stroke-muted"
-//             />
-//             <Tooltip
-//               contentStyle={{
-//                 backgroundColor: '#fff',
-//                 border: '1px solid #ccc',
-//                 borderRadius: '4px'
-//               }}
-//               formatter={(value: number) => [`$${value}`, 'Revenue']}
-//             />
-//             <Bar
-//               dataKey="revenue"
-//               fill="#2563eb"
-//               radius={[4, 4, 0, 0]}
-//               className="fill-primary"
-//             />
-//           </BarChart>
-//         </ResponsiveContainer>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-'use client';
-
 import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
   Tooltip,
-  CartesianGrid
-} from 'recharts';
+  Legend
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOrders } from '@/app/queries/order';
+import { useRestaurants } from '@/app/queries/restaurants';
+import { useSession } from 'next-auth/react';
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function BarGraph() {
-  const { data: orders } = useOrders();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const { data: orders = [], isLoading: ordersLoading } = useOrders(
+    userId || ''
+  );
+  const { data: restaurants = [], isLoading: restaurantsLoading } =
+    useRestaurants(userId || '');
 
-  // Group orders by restaurant and count them
-  const restaurantOrderCounts =
-    orders?.reduce(
-      (acc, order) => {
-        const restaurantName = order.restaurant?.name || 'Unknown';
-        acc[restaurantName] = (acc[restaurantName] || 0) + 1;
-        return acc;
+  if (ordersLoading || restaurantsLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Restaurant Performance</CardTitle>
+        </CardHeader>
+        <CardContent className="flex h-[300px] items-center justify-center">
+          Loading...
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const restaurantMetrics = restaurants
+    .map((restaurant) => {
+      const restaurantOrders = orders.filter(
+        (order) => order.restaurantId === restaurant.id
+      );
+      const totalOrders = restaurantOrders.length;
+      const totalValue = restaurantOrders.reduce(
+        (sum, order) => sum + order.orderValue,
+        0
+      );
+
+      return {
+        name: restaurant.name,
+        totalOrders,
+        totalValue,
+        averageOrderValue: totalOrders ? totalValue / totalOrders : 0,
+        conversionRate: (totalOrders / (orders.length || 1)) * 100
+      };
+    })
+    .sort((a, b) => b.conversionRate - a.conversionRate)
+    .slice(0, 5);
+
+  const chartData = {
+    labels: restaurantMetrics.map((r) => r.name),
+    datasets: [
+      {
+        label: 'Conversion Rate (%)',
+        data: restaurantMetrics.map((r) => r.conversionRate.toFixed(1)),
+        backgroundColor: '#4F6D7A',
+        borderColor: '#4F6D7A',
+        borderWidth: 1,
+        borderRadius: 4,
+        hoverBackgroundColor: 'rgba(8, 76, 97, 0.8)'
       },
-      {} as Record<string, number>
-    ) || {};
+      {
+        label: 'Average Order Value ($)',
+        data: restaurantMetrics.map((r) => r.averageOrderValue.toFixed(2)),
+        backgroundColor: '#084C61',
+        borderColor: '#084C61',
+        borderWidth: 1,
+        borderRadius: 4,
+        hoverBackgroundColor: 'rgba(79, 109, 122, 0.8)'
+      }
+    ]
+  };
 
-  // Convert to array and sort by order count
-  const sortedData = Object.entries(restaurantOrderCounts)
-    .map(([name, orders]) => ({
-      name,
-      orders
-    }))
-    .sort((a, b) => b.orders - a.orders)
-    .slice(0, 5); // Take top 5
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const
+      },
+      title: {
+        display: true,
+        text: 'Top 5 Performing Restaurants',
+        color: '#442B1C',
+        font: {
+          size: 16,
+          weight: 'bold' as 'bold'
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: '#f3f4f6'
+        }
+      }
+    }
+  };
 
   return (
-    <Card className="col-span-4">
+    <Card>
       <CardHeader>
-        <CardTitle>Top Performing Restaurants</CardTitle>
+        <CardTitle>Restaurant Performance</CardTitle>
       </CardHeader>
-      <CardContent className="pl-2">
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={sortedData}>
-            <XAxis
-              dataKey="name"
-              stroke="#888888"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <YAxis
-              stroke="#888888"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `${value} orders`}
-            />
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              className="stroke-muted"
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #ccc',
-                borderRadius: '4px'
-              }}
-              formatter={(value: number) => [`${value} orders`, 'Orders']}
-            />
-            <Bar
-              dataKey="orders"
-              fill="#2563eb"
-              radius={[4, 4, 0, 0]}
-              className="fill-primary"
-            />
-          </BarChart>
-        </ResponsiveContainer>
+      <CardContent>
+        <Bar data={chartData} options={options} height={300} />
       </CardContent>
     </Card>
   );

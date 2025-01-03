@@ -1,51 +1,15 @@
-// import { useQuery } from '@tanstack/react-query';
-// import type { Order } from '@/types/order-type';
-
-// const API_URL = '/api/orders';
-
-// export const QUERY_KEYS = {
-//   orders: ['orders'] as const,
-//   order: (id: number) => ['orders', id] as const
-// };
-
-// async function fetchOrders(): Promise<Order[]> {
-//   try {
-//     const response = await fetch(API_URL);
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch orders');
-//     }
-//     const data: Order[] = await response.json();
-//     return data;
-//   } catch (error) {
-//     throw {
-//       message:
-//         error instanceof Error ? error.message : 'Failed to fetch orders',
-//       status: error instanceof Response ? error.status : 500
-//     };
-//   }
-// }
-
-// export function useOrders() {
-//   return useQuery({
-//     queryKey: QUERY_KEYS.orders,
-//     queryFn: fetchOrders
-//   });
-// }
-
-// export function useOrder(id: number) {
-//   return useQuery({
-//     queryKey: QUERY_KEYS.order(id),
-//     queryFn: async () => {
-//       const response = await fetch(`${API_URL}/${id}`);
-//       if (!response.ok) throw new Error('Failed to fetch order');
-//       return response.json();
-//     },
-//     enabled: !!id
-//   });
-// }
-
 import { useQuery } from '@tanstack/react-query';
-import { Restaurant } from '@/types';
+
+
+export const QUERY_KEYS = {
+  orders: ['orders'] as const,
+  order: (id: number) => ['orders', id] as const
+};
+
+interface APIResponse {
+  message: string;
+  orders: Order[];
+}
 
 interface Order {
   id: number;
@@ -53,32 +17,25 @@ interface Order {
   orderDate: string;
   orderValue: number;
   orderStatus: string;
-  restaurant: Restaurant;
-  performanceId: number | null;
+  restaurant: {
+    name: string;
+    address: string;
+  };
 }
 
-interface APIResponse {
-  message: string;
-  data: Order[];
+async function fetchOrders(userId: string) {
+  const response = await fetch(`/api/orders?userId=${userId}`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const { orders } = (await response.json()) as APIResponse;
+  return orders;
 }
 
-const API_URL = '/api/orders';
-
-export const QUERY_KEYS = {
-  orders: ['orders'] as const,
-  order: (id: number) => ['orders', id] as const
-};
-async function fetchOrders(): Promise<Order[]> {
-  const response = await fetch(API_URL);
-  if (!response.ok) throw new Error('Failed to fetch orders');
-
-  const { data } = (await response.json()) as APIResponse;
-  return data;
-}
-
-export function useOrders() {
+export function useOrders(userId: string) {
   return useQuery({
-    queryKey: QUERY_KEYS.orders,
-    queryFn: fetchOrders
+    queryKey: [...QUERY_KEYS.orders, userId],
+    queryFn: () => fetchOrders(userId),
+    enabled: !!userId
   });
 }

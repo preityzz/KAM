@@ -1,42 +1,67 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // Adjust the path to your prisma client file
-import { NextRequest } from "next/server";
+
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { NextRequest } from 'next/server';
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { restaurantId: string } }
 ) {
   const { restaurantId } = params;
+  const userId = req.nextUrl.searchParams.get('userId');
 
-  if(!restaurantId || isNaN(Number(restaurantId))) {
+  if (!restaurantId || isNaN(Number(restaurantId))) {
     return NextResponse.json(
-      { message: "Invalid or missing restaurantId" },
+      { message: 'Invalid or missing restaurantId' },
+      { status: 400 }
+    );
+  }
+
+  if (!userId) {
+    return NextResponse.json(
+      { message: 'User ID is required' },
       { status: 400 }
     );
   }
 
   try {
-    const orders = await prisma.order.findMany({
+    // Verify restaurant belongs to user
+    const restaurant = await prisma.restaurant.findFirst({
       where: {
-        restaurantId: parseInt(restaurantId),
-      },
-      include: {
-        performance: true, // Optional: Include performance details if necessary
-        restaurant: true, // Include restaurant details if necessary
-      },
+        id: parseInt(restaurantId),
+        userId: parseInt(userId)
+      }
     });
 
-    if (!orders.length) {
+    if (!restaurant) {
       return NextResponse.json(
-        { message: `No orders found for restaurant ID: ${restaurantId}` },
+        { message: 'Restaurant not found or unauthorized' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(orders, { status: 200 });
+    const orders = await prisma.order.findMany({
+      where: {
+        restaurantId: parseInt(restaurantId),
+        restaurant: {
+          userId: parseInt(userId)
+        }
+      },
+      include: {
+        restaurant: true
+      },
+      orderBy: {
+        orderDate: 'desc'
+      }
+    });
+
+    return NextResponse.json({
+      message: 'Orders fetched successfully',
+      orders
+    });
   } catch (error) {
     return NextResponse.json(
-      { error: "Something went wrong while fetching the orders" },
+      { message: 'Error fetching orders', error },
       { status: 500 }
     );
   }
