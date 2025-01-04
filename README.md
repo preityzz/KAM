@@ -12,7 +12,7 @@
 https://github.com/user-attachments/assets/e9ec2fd2-d044-494b-ad27-17b633b2322b
 
 
-## Overview
+# Overview
 
 The  KAM-Lead Management System is a comprehensive solution built with Next.js 14. It is designed to streamline restaurant management and enhance performance tracking through a variety of powerful features:
 - Lead Management & Tracking
@@ -22,7 +22,7 @@ The  KAM-Lead Management System is a comprehensive solution built with Next.js 1
 This system provides an intuitive dashboard for lead management, call tracking, and sales metrics visualization, ensuring efficient restaurant management and performance tracking.
 
 
-## Tech Stack
+# Tech Stack
 - Framework - [Next.js 14](https://nextjs.org/)
 - Language - [TypeScript](https://www.typescriptlang.org)
 - Database ORM - [Prisma](https://www.prisma.io)
@@ -51,7 +51,7 @@ This system provides an intuitive dashboard for lead management, call tracking, 
 - Responsive Design
 
 ********************************************************************************
-## System Requirements
+# System Requirements
 
 - Node.js 14 
 - pnpm v8 
@@ -60,92 +60,106 @@ This system provides an intuitive dashboard for lead management, call tracking, 
 
 ********************************************************************************
 
-## Installation Instructions
+# Installation Instructions
 1.Setup Project
-  # Clone repository
-  git clone <https://github.com/preityzz/KAM>
-            OR
-  Download Zip
+  ## Clone repository
+  ```bash
+  -git clone https://github.com/preityzz/KAM
+  ```
 
+  ## Change Directory:
+  
+    cd assignment
+   
 
-  # Install dependencies
-  pnpm install
+  ## Install dependencies
+   
+    pnpm install
+ 
 
 3.Environment Configuration
-  # Create .env file
+  ## Create .env file
   copy .env.example .env
 
-  # Update .env with your values
-  DATABASE_URL="postgresql://..."
-  NEXTAUTH_SECRET="your-secret"
-  NEXTAUTH_URL="http://localhost:3000"
+  ## Update .env with your values
+  -DATABASE_URL="postgresql://..."
+  -NEXTAUTH_SECRET="your-secret"
+  -NEXTAUTH_URL="http://localhost:3000"
 
 4.Database Setup
-  # Generate Prisma client
-  pnpm prisma generate
+  ## Generate Prisma client
+  ```bash
+ pnpm prisma generate
+ ```
 
-  # Push database schema
+  ## Push database schema
+  ```bash
   pnpm prisma db push
+  ```
 
-  # Seed database (optional)
+  ## Seed database (optional)
+  ```bash
   pnpm prisma db seed
+  ```
 
 ********************************************************************************
 
-## Running Instructions
-   # Project Run
+# Running Instructions
+   ## Project Run
+   ```bash
     pnpm run dev
+  ```
 
-   # Manage Database Content
+   ## Manage Database Content
+   ```bash
     npx prisma studio
-
-
+   ```
 You should now be able to access the application at http://localhost:3000.
 
 ********************************************************************************
 
-## Test execution guide
+# Test execution guide
 
-# Environment Setup
+## Environment Setup
 * Install dependencies
-  pnpm install
+  -pnpm install
 
-# Setup test database
-pnpm prisma generate
-pnpm prisma db push
+## Setup test database
+- pnpm prisma generate
+- pnpm prisma db push
 
-# Running Tests
+## Running Tests
 Run all tests
-  pnpm test
+ - pnpm test
 
-Run specific test suites
-  pnpm test auth        # Run auth tests
-  pnpm test restaurant  # Run restaurant tests
-  pnpm test callplans   # Run call plan tests
+-Run specific test suites
+  - pnpm test auth        # Run auth tests
+  - pnpm test restaurant  # Run restaurant tests
+  - pnpm test callplans   # Run call plan tests
 
-Test Cases
-  Authentication Tests
-  User registration
-  Login with valid credentials
-  Login with invalid credentials
-  Password reset flow
+* Test Cases
+  - Authentication Tests
+  - User registration
+  - Login with valid credentials
+  - Login with invalid credentials
+  - Password reset flow
 
 ## Troubleshooting
-1.Network Issues
-2.Check the internet connection if API tests fail due to timeouts or network errors.
-3.Database Errors.
-  Ensure the test database is running.
-  Verify the database configuration (e.g., host, port, credentials) in the .env file.
-6.Dependency Issues
-  Reinstall dependencies:
-  npm install
-7.Check for missing or outdated packages.
+- 1.Network Issues
+- 2.Check the internet connection if API tests fail due to timeouts or network errors.
+- 3.Database Errors.
+  - Ensure the test database is running.
+  - Verify the database configuration (e.g., host, port, credentials) in the .env file.
+- 6.Dependency Issues
+  - Reinstall dependencies:
+  - npm install
+- 7.Check for missing or outdated packages.
 
 ********************************************************************************
 
-## API documentation
+# API documentation
 
- # Authentication Endpoints 
+ ## Authentication Endpoints 
   1.  POST: /api/auth/login
  * Description: Authenticate user and get session token
  * Request Body:{
@@ -154,7 +168,7 @@ Test Cases
   }
  * Response: JWT token and user details
 
- # Restaurant Endpoints
+ ## Restaurant Endpoints
  1.   GET:/api/restaurants
   * Description: Get all restaurants for a user
   * Query Parameters:
@@ -182,7 +196,7 @@ Test Cases
   * Parameters:
         id: Restaurant ID
   
-  # Call Plans Endpoints
+  ## Call Plans Endpoints
   1. GET:/api/callPlans
   * Description: Get all call plans
   * Query Parameters:
@@ -198,7 +212,7 @@ Test Cases
           "status": "pending|completed|missed"
         }
 
- # Interactions Endpoints
+ ## Interactions Endpoints
  1. GET:/api/interactions
  * Description: Get all interactions
  * Query Parameters:
@@ -214,17 +228,17 @@ Test Cases
           "date": "string"
         }
   
-  # Response Formats
+  ## Response Formats
         {
           "message": "string",
           "data": {}
         }
-  # Error Response
+  ## Error Response
         {
           "error": "string",
           "message": "string"
         }
-  # Status Codes
+  ## Status Codes
         200: Success
         201: Created
         400: Bad Request
@@ -235,25 +249,25 @@ Test Cases
 
 ********************************************************************************
 
-## Sample usage examples
-Email:admin@example.com
-Password:  1234                     
+# Sample usage examples
+ - Email:admin@example.com
+ - Password:  1234                     
 
 
-{
-  "id": 3,
-  "email": "admin@example.com",
-  "password": "$2b$10$hashedPasswordHere",
-  "role": "ADMIN",
-  "createdAt": "2023-09-28T00:00:00.000Z",
-  "updatedAt": "2023-09-28T00:00:00.000Z",
-  "isVerified": true
-}
+- {
+  - "id": 3,
+  - "email": "admin@example.com",
+  - "password": "$2b$10$hashedPasswordHere",
+  - "role": "ADMIN",
+  - "createdAt": "2023-09-28T00:00:00.000Z",
+  - "updatedAt": "2023-09-28T00:00:00.000Z",
+  - "isVerified": true
+- }
 
 
 
- ## Input 
-  # For Restaurant 
+ # Input 
+  ## For Restaurant 
   {
     "name": " Restaurant XYZ"
     "phone": "324-543-6543"
@@ -262,7 +276,7 @@ Password:  1234
      "userId": 3
 } 
  
- # For POCs
+ ## For POCs
   {
      "name": "David Lee",
     "role": "Dishwasher",
@@ -271,7 +285,7 @@ Password:  1234
     "restaurantId": 24
   }
 
-# For CallPlans
+## For CallPlans
 {
     "restaurantId":23,
   "frequency": 8,
@@ -280,7 +294,7 @@ Password:  1234
 
 }
 
-# For Interaction
+## For Interaction
 
   {
   "interactionType": "Order",
@@ -291,7 +305,7 @@ Password:  1234
 
 }
 
-# For Orders
+## For Orders
 {
   "restaurantId": 25,
   "orderDate": "2024-12-25T15:30:00Z",
@@ -302,7 +316,7 @@ Password:  1234
   
 
 
-## Pages
+# Pages
 
 | Pages | Specifications |
 | :--- | :--- |
