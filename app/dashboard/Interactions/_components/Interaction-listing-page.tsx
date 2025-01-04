@@ -6,8 +6,8 @@ import { Separator } from '@/components/ui/separator';
 import { useInteractions } from '@/app/queries/interaction';
 import { Loader } from 'lucide-react';
 import InteractionTable from './interaction-table';
-import { Interaction } from 'c:/Users/amanp/OneDrive/Desktop/assignment/types/interaction-type';
 import { redirect } from 'next/navigation';
+import { Interaction } from '@/types/interaction-type';
 
 export default function InteractionListingPage() {
   const { data: rawInteractions, isLoading, error } = useInteractions();
