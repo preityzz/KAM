@@ -4,13 +4,9 @@
 <br />
 <div align="center">
 <a href="https://kam-7jcoe1jsm-preetitrip14-gmailcoms-projects.vercel.app/">View Demo</a>
-<a href="https://drive.google.com/file/d/1snqqAl5MYq2oo3BLSP6NTSGtQSN7bZ5l/view">Video Demo</a>
-
-
-
+<video controls src="KAM-Demo.mp4" title="Title"></video>
 <span> 
 </div>
-
 
 ## Overview
 
