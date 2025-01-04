@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   try {
     const { restaurantId, frequency, lastCallDate } = await request.json();
 
-    // Validate input
+   
     const parsedRestaurantId = parseInt(restaurantId, 10);
     const parsedFrequency = parseInt(frequency, 10);
 
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify restaurant existence
+   
     const restaurant = await prisma.restaurant.findUnique({
       where: { id: parsedRestaurantId }
     });
@@ -36,13 +36,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Calculate next call date
+  
     const nextCallDate = new Date();
     if (parsedLastCallDate) {
       nextCallDate.setDate(parsedLastCallDate.getDate() + parsedFrequency);
     }
 
-    // Upsert call plan
+   
     const callPlan = await prisma.callPlan.upsert({
       where: { restaurantId: parsedRestaurantId },
       update: {
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       callPlan
     });
   } catch (error) {
-    console.error('Error managing call plan:', error);
+   
     return NextResponse.json(
       { message: 'An unexpected error occurred. Please try again later.' },
       { status: 500 }
@@ -114,7 +114,7 @@ export async function GET(request: Request) {
       callPlans
     });
   } catch (error) {
-    console.error('Error fetching call plans:', error);
+   
     return NextResponse.json(
       { message: 'An unexpected error occurred. Please try again later.' },
       { status: 500 }

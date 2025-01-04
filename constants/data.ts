@@ -6,16 +6,16 @@ export type RestaurantLead = {
   address: string;
   phone: string;
   email: string;
-  status: 'active' | 'inactive' | 'pending'; // Status can only be these values
-  assignedKAM: string; // Key Account Manager assigned to this lead
-  userId: number; // Reference to the user who owns this lead
-  createdAt: Date; // When the lead was created
-  updatedAt: Date; // When the lead was last updated
-  contacts?: Contact[]; // Optional array of contact persons
-  notes?: string; // Optional notes about the lead
-  lastInteraction?: Date; // Optional date of last interaction
+  status: 'active' | 'inactive' | 'pending'; 
+  assignedKAM: string; 
+  userId: number; 
+  createdAt: Date; 
+  updatedAt: Date; 
+  contacts?: Contact[]; 
+  notes?: string; 
+  lastInteraction?: Date;
   location?: {
-    // Optional location details
+   
     latitude?: number;
     longitude?: number;
   };
@@ -25,9 +25,9 @@ export type Contact = {
   name: string;
   phone: string;
   email: string;
-  role: string; // Role in the restaurant
-  isPrimary: boolean; // Whether this is the primary contact
-  restaurantId: number; // Reference to the restaurant
+  role: string; 
+  isPrimary: boolean; 
+  restaurantId: number; 
 };
 
 export const navItems: NavItem[] = [
@@ -37,7 +37,7 @@ export const navItems: NavItem[] = [
     icon: 'dashboard',
     isActive: false,
     shortcut: ['d', 'd'],
-    items: [] // Empty array as there are no child items for Dashboard
+    items: [] 
   },
   {
     title: 'Restaurant Leads',
@@ -45,7 +45,7 @@ export const navItems: NavItem[] = [
     icon: 'user',
     shortcut: ['r', 'r'],
     isActive: false,
-    items: [] // No child items
+    items: [] 
   },
 
   {
@@ -54,7 +54,7 @@ export const navItems: NavItem[] = [
     icon: 'messageCircle',
     shortcut: ['i', 'i'],
     isActive: false,
-    items: [] // No child items
+    items: [] 
   },
   {
     title: 'Call Plans',
@@ -70,6 +70,6 @@ export const navItems: NavItem[] = [
     icon: 'shoppingBag',
     shortcut: ['o', 'o'],
     isActive: false,
-    items: [] // No child items
+    items: [] 
   }
 ];

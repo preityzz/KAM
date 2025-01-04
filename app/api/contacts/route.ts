@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if the restaurant exists
+  
     const restaurant = await prisma.restaurant.findUnique({
       where: { id: restaurantId },
       include: { contacts: true },

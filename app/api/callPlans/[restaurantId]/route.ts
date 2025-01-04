@@ -24,7 +24,7 @@ export async function GET(
   }
 
   try {
-    // Verify restaurant belongs to user
+  
     const restaurant = await prisma.restaurant.findFirst({
       where: {
         id: parseInt(restaurantId),

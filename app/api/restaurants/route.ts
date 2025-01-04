@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       restaurant
     });
   } catch (error: any) {
-    // if (error instanceof Prisma.PrismaClientKnownRequestError) {
+   
     if (error.code === 'P2003') {
       return NextResponse.json(
         { message: 'Invalid user ID provided' },
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     { status: 500 }
   );
 }
-// }
+
 
 export async function GET(request: Request) {
   try {

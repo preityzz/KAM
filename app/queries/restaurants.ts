@@ -1,8 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { RestaurantLead } from '@/types/restaurant-type';
-import { useSession } from 'next-auth/react'; // Assuming you're using `next-auth`
-
+import { useSession } from 'next-auth/react'; 
 const API_URL = '/api/restaurants';
 
 export const QUERY_KEYS = {
@@ -10,7 +9,7 @@ export const QUERY_KEYS = {
   restaurant: (id: number) => ['restaurants', id] as const
 };
 
-// Utility function to add userId to the request body
+
 const appendUserId = (body: object, userId: string) => ({
   ...body,
   userId

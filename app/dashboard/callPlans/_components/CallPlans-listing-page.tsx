@@ -7,10 +7,13 @@ import { useCallPlans } from '@/app/queries/callPlans';
 import { Loader } from 'lucide-react';
 import CallPlanTable from './callPlans-table';
 import { CallPlan } from './callPlans-table/columns';
+import { useSession } from 'next-auth/react';
 
 export default function CallPlanListingPage() {
-  const userId = '3';
-  const { data: callPlansData, isLoading } = useCallPlans(userId);
+  const { data: session } = useSession();
+  const { data: callPlansData, isLoading } = useCallPlans(
+    session?.user?.id as string
+  );
 
   const formattedCallPlans: CallPlan[] =
     callPlansData?.map((plan) => ({

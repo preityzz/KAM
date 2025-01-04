@@ -1,10 +1,10 @@
 {
-  "name": "nextshcdndashboardstarter",
+  "name": "KAM-Lead Management System",
   "version": "1.0.0",
   "private": true,
   "author": {
-    "name": "Kiran",
-    "url": "https://github.com/Kiranism"
+    "name": "Preeti",
+    "url": "https://github.com/preityzz"
   },
   "scripts": {
     "dev": "next dev --turbo",

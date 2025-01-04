@@ -44,7 +44,6 @@ export default function InteractionListingPage() {
     );
   }
 
-  // const totalInteractions = interactions?.length || 0;
 
   return (
     <PageContainer scrollable>

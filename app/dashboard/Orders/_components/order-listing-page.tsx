@@ -7,10 +7,13 @@ import { useOrders } from '@/app/queries/order';
 import { Loader } from 'lucide-react';
 import OrderTable from './order-table';
 import { Order } from './order-table/columns';
+import { useSession } from 'next-auth/react';
 
 export default function OrderListingPage() {
-  const userId = '3';
-  const { data: ordersData, isLoading } = useOrders(userId);
+  const { data: session } = useSession();
+  const { data: ordersData, isLoading } = useOrders(
+    session?.user?.id as string
+  );
 
   const formattedOrders: Order[] =
     ordersData?.map((order) => ({

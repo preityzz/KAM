@@ -31,7 +31,7 @@ const authConfig: NextAuthConfig = {
           throw new Error('Invalid credentials');
         }
 
-        // Verify the password using bcryptjs
+       
         const isValid = bcrypt.compareSync(
           credentials.password as string,
           user.password
@@ -48,7 +48,7 @@ const authConfig: NextAuthConfig = {
     })
   ],
   pages: {
-    signIn: '/' // Custom sign-in page
+    signIn: '/' 
   },
   session: {
     strategy: 'jwt'

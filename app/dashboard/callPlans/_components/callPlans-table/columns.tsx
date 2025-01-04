@@ -51,7 +51,7 @@ export const columns: ColumnDef<CallPlan>[] = [
       const frequency = row.getValue('frequency') as number;
 
       const calculateNextCallDate = (lastCall: string | null, freq: number) => {
-        if (!lastCall) return new Date(); // If no last call, due immediately
+        if (!lastCall) return new Date();
         const lastCallDateObj = new Date(lastCall);
         return new Date(
           lastCallDateObj.setDate(lastCallDateObj.getDate() + freq)
@@ -67,8 +67,5 @@ export const columns: ColumnDef<CallPlan>[] = [
       );
     }
   }
-  //   {
-  //     id: 'actions',
-  //     cell: ({ row }) => <CellAction data={row.original} />
-  //   }
+
 ];

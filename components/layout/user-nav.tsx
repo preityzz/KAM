@@ -18,7 +18,7 @@ export function UserNav() {
   const { data: session } = useSession();
 
   if (session) {
-    const isAdmin = true; // Set admin status
+    const isAdmin = true; 
 
     return (
       <DropdownMenu>

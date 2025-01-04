@@ -19,11 +19,11 @@ export default function KBar({ children }: { children: React.ReactNode }) {
     router.push(url);
   };
 
-  // These action are for the navigation
+ 
   const actions = useMemo(
     () =>
       navItems.flatMap((navItem) => {
-        // Only include base action if the navItem has a real URL and is not just a container
+      
         const baseAction =
           navItem.url !== '#'
             ? {
@@ -49,10 +49,10 @@ export default function KBar({ children }: { children: React.ReactNode }) {
             perform: () => navigateTo(childItem.url)
           })) ?? [];
 
-        // Return only valid actions (ignoring null base actions for containers)
+     
         return baseAction ? [baseAction, ...childActions] : childActions;
       }),
-    []
+    [navigateTo]
   );
 
   return (

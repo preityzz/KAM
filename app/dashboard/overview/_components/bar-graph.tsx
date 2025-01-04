@@ -13,7 +13,7 @@ import { useOrders } from '@/app/queries/order';
 import { useRestaurants } from '@/app/queries/restaurants';
 import { useSession } from 'next-auth/react';
 
-// Register ChartJS components
+
 ChartJS.register(
   CategoryScale,
   LinearScale,

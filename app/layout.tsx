@@ -7,7 +7,7 @@ import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
+  title: 'KAM-Lead Management System',
   description: 'Basic dashboard with Next.js and Shadcn'
 };
 
