@@ -3,6 +3,6 @@
 import React from 'react';
 import InteractionListingPage from './_components/Interaction-listing-page';
 
-export default function Page() {
+export default function InteractionPage() {
   return <InteractionListingPage />;
 }
