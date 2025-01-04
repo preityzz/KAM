@@ -1,22 +1,32 @@
-
 import { NextResponse } from 'next/server';
-import {prisma} from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
     const { restaurantId, frequency, lastCallDate } = await request.json();
 
-    // Validate required fields
-    if (!restaurantId || !frequency) {
+    // Validate input
+    const parsedRestaurantId = parseInt(restaurantId, 10);
+    const parsedFrequency = parseInt(frequency, 10);
+
+    if (isNaN(parsedRestaurantId) || isNaN(parsedFrequency)) {
       return NextResponse.json(
-        { message: 'Restaurant ID and frequency are required' },
+        { message: 'Restaurant ID and frequency must be valid numbers' },
         { status: 400 }
       );
     }
 
-    // Verify restaurant exists
+    let parsedLastCallDate = lastCallDate ? new Date(lastCallDate) : null;
+    if (parsedLastCallDate && isNaN(parsedLastCallDate.getTime())) {
+      return NextResponse.json(
+        { message: 'Invalid last call date provided' },
+        { status: 400 }
+      );
+    }
+
+    // Verify restaurant existence
     const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId }
+      where: { id: parsedRestaurantId }
     });
 
     if (!restaurant) {
@@ -26,23 +36,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // Calculate next call date based on frequency
+    // Calculate next call date
     const nextCallDate = new Date();
-    if (lastCallDate) {
-      nextCallDate.setDate(new Date(lastCallDate).getDate() + frequency);
+    if (parsedLastCallDate) {
+      nextCallDate.setDate(parsedLastCallDate.getDate() + parsedFrequency);
     }
 
+    // Upsert call plan
     const callPlan = await prisma.callPlan.upsert({
-      where: { restaurantId },
+      where: { restaurantId: parsedRestaurantId },
       update: {
-        frequency,
-        lastCallDate: lastCallDate ? new Date(lastCallDate) : null,
+        frequency: parsedFrequency,
+        lastCallDate: parsedLastCallDate,
         nextCallDate
       },
       create: {
-        restaurantId,
-        frequency,
-        lastCallDate: lastCallDate ? new Date(lastCallDate) : null,
+        restaurantId: parsedRestaurantId,
+        frequency: parsedFrequency,
+        lastCallDate: parsedLastCallDate,
         nextCallDate
       },
       include: {
@@ -55,8 +66,9 @@ export async function POST(request: Request) {
       callPlan
     });
   } catch (error) {
+    console.error('Error managing call plan:', error);
     return NextResponse.json(
-      { message: 'Error managing call plan', error },
+      { message: 'An unexpected error occurred. Please try again later.' },
       { status: 500 }
     );
   }
@@ -65,11 +77,20 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-    const userId = url.searchParams.get('userId');
-
-    if (!userId) {
+    const userIdParam = url.searchParams.get('userId');
+    
+    if (!userIdParam) {
       return NextResponse.json(
         { message: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const userId = parseInt(userIdParam, 10);
+
+    if (isNaN(userId)) {
+      return NextResponse.json(
+        { message: 'Invalid or missing User ID' },
         { status: 400 }
       );
     }
@@ -77,7 +98,7 @@ export async function GET(request: Request) {
     const callPlans = await prisma.callPlan.findMany({
       where: {
         restaurant: {
-          userId: parseInt(userId)
+          userId
         }
       },
       include: {
@@ -93,8 +114,9 @@ export async function GET(request: Request) {
       callPlans
     });
   } catch (error) {
+    console.error('Error fetching call plans:', error);
     return NextResponse.json(
-      { message: 'Error fetching call plans', error },
+      { message: 'An unexpected error occurred. Please try again later.' },
       { status: 500 }
     );
   }
