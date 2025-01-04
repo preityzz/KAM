@@ -1,6 +1,5 @@
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
 
 export async function POST(request: Request) {
   try {
@@ -34,21 +33,21 @@ export async function POST(request: Request) {
       message: 'Restaurant created successfully',
       restaurant
     });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2003') {
-        return NextResponse.json(
-          { message: 'Invalid user ID provided' },
-          { status: 400 }
-        );
-      }
+  } catch (error: any) {
+    // if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === 'P2003') {
+      return NextResponse.json(
+        { message: 'Invalid user ID provided' },
+        { status: 400 }
+      );
     }
-    return NextResponse.json(
-      { message: 'Error creating restaurant', error },
-      { status: 500 }
-    );
   }
+  return NextResponse.json(
+    { message: 'Error creating restaurant' },
+    { status: 500 }
+  );
 }
+// }
 
 export async function GET(request: Request) {
   try {

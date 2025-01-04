@@ -27,8 +27,6 @@ interface Restaurant {
   updatedAt: string;
 }
 
-
-
 export const fetchPoc = async (id: number, userId: string) => {
   try {
     const response = await fetch(`/api/contacts/${id}`, {
@@ -59,8 +57,6 @@ async function fetchRestaurants(
   if (!userId) {
     throw new Error('User ID is required');
   }
-
-  console.log('Fetching with userId:', userId); // Debug log
 
   const response = await fetch(`${API_URL}?userId=${userId}`);
   if (!response.ok) {

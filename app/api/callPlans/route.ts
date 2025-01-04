@@ -1,3 +1,50 @@
+/**
+ * @swagger
+ * /api/callPlans:
+ *   post:
+ *     summary: Create a new call plan
+ *     description: Creates a new call plan for a restaurant with specified frequency
+ *     tags: [CallPlans]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - restaurantId
+ *               - frequency
+ *             properties:
+ *               restaurantId:
+ *                 type: string
+ *                 description: ID of the restaurant
+ *               frequency:
+ *                 type: integer
+ *                 description: Call frequency in days
+ *               lastCallDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Date of the last call (optional)
+ *     responses:
+ *       201:
+ *         description: Call plan created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 callPlan:
+ *                   $ref: '#/components/schemas/CallPlan'
+ *       400:
+ *         description: Bad request - Missing required fields
+ *       404:
+ *         description: Restaurant not found
+ *       500:
+ *         description: Server error
+ */
+
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 

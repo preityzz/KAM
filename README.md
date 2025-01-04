@@ -129,30 +129,8 @@ You should now be able to access the application at http://localhost:3000.
 | [Orders](dashboard/orders) | Detailed performance metrics, conversion rates, and sales analytics |
 | [Not Found](/dashboard/notfound) | Custom 404 error page with navigation assistance |                                                                                                                               |
 
-## Getting Started
 
-Follow these steps to clone the repository and start the development server:
 
-> [!NOTE]  
-> If you want to use the starter with  **Next 15** with **React 19**, follow these steps:
-> - Clone only the `next-15` branch:
->   ```bash
->   git clone --branch next-15 --single-branch https://github.com/Kiranism/next-shadcn-dashboard-starter.git
 
-- Clone the repo:
-```bash 
-git clone https://github.com/Kiranism/next-shadcn-dashboard-starter.git 
-```
 
-- `npm install`
-- Create a `.env.local` file by copying the example environment file:
-  `cp env.example.txt .env.local`
-- Add the required environment variables to the `.env.local` file.
-- `npm run dev`
 
-You should now be able to access the application at http://localhost:3000.
-
-> [!WARNING]  
-> After cloning or forking the repository, be cautious when pulling or syncing with the latest changes, as this may result in breaking conflicts.
-
-Cheers! 🥂

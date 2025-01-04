@@ -7,12 +7,9 @@ import { useInteractions } from '@/app/queries/interaction';
 import { Loader } from 'lucide-react';
 import InteractionTable from './interaction-table';
 import { Interaction } from 'c:/Users/amanp/OneDrive/Desktop/assignment/types/interaction-type';
-import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
 export default function InteractionListingPage() {
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
   const { data: rawInteractions, isLoading, error } = useInteractions();
 
   const interactions: Interaction[] =
