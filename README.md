@@ -8,6 +8,10 @@
 <span> 
 </div>
 
+
+https://github.com/user-attachments/assets/e9ec2fd2-d044-494b-ad27-17b633b2322b
+
+
 ## Overview
 
 The  KAM-Lead Management System is a comprehensive solution built with Next.js 14. It is designed to streamline restaurant management and enhance performance tracking through a variety of powerful features:
