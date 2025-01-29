@@ -35,7 +35,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
               }
             : null;
 
-        // Map child items into actions
+       
         const childActions =
           navItem.items?.map((childItem) => ({
             id: `${childItem.title.toLowerCase()}Action`,
