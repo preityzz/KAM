@@ -6,16 +6,15 @@ export type RestaurantLead = {
   address: string;
   phone: string;
   email: string;
-  status: 'active' | 'inactive' | 'pending'; 
-  assignedKAM: string; 
-  userId: number; 
-  createdAt: Date; 
-  updatedAt: Date; 
-  contacts?: Contact[]; 
-  notes?: string; 
+  status: 'active' | 'inactive' | 'pending';
+  assignedKAM: string;
+  userId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  contacts?: Contact[];
+  notes?: string;
   lastInteraction?: Date;
   location?: {
-   
     latitude?: number;
     longitude?: number;
   };
@@ -25,9 +24,9 @@ export type Contact = {
   name: string;
   phone: string;
   email: string;
-  role: string; 
-  isPrimary: boolean; 
-  restaurantId: number; 
+  role: string;
+  isPrimary: boolean;
+  restaurantId: number;
 };
 
 export const navItems: NavItem[] = [
@@ -37,7 +36,7 @@ export const navItems: NavItem[] = [
     icon: 'dashboard',
     isActive: false,
     shortcut: ['d', 'd'],
-    items: [] 
+    items: []
   },
   {
     title: 'Restaurant Leads',
@@ -45,7 +44,7 @@ export const navItems: NavItem[] = [
     icon: 'user',
     shortcut: ['r', 'r'],
     isActive: false,
-    items: [] 
+    items: []
   },
 
   {
@@ -54,7 +53,7 @@ export const navItems: NavItem[] = [
     icon: 'messageCircle',
     shortcut: ['i', 'i'],
     isActive: false,
-    items: [] 
+    items: []
   },
   {
     title: 'Call Plans',
@@ -70,6 +69,6 @@ export const navItems: NavItem[] = [
     icon: 'shoppingBag',
     shortcut: ['o', 'o'],
     isActive: false,
-    items: [] 
+    items: []
   }
 ];

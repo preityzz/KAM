@@ -1,4 +1,4 @@
-import {prisma} from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -34,7 +34,6 @@ export async function POST(request: Request) {
       restaurant
     });
   } catch (error: any) {
-   
     if (error.code === 'P2003') {
       return NextResponse.json(
         { message: 'Invalid user ID provided' },
@@ -47,7 +46,6 @@ export async function POST(request: Request) {
     { status: 500 }
   );
 }
-
 
 export async function GET(request: Request) {
   try {
@@ -84,3 +82,12 @@ export async function GET(request: Request) {
     );
   }
 }
+
+// export async  function GET(request:Request){
+
+//   try{
+//     const url=new URL(request.url);
+//     const userId=url.searchParams.get('userId');
+//     const status=url.searchParams.get('status');
+//   }
+// }

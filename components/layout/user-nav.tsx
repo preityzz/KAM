@@ -18,7 +18,7 @@ export function UserNav() {
   const { data: session } = useSession();
 
   if (session) {
-    const isAdmin = true; 
+    const isAdmin = true;
 
     return (
       <DropdownMenu>
@@ -69,7 +69,9 @@ export function UserNav() {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => signOut({ callbackUrl: '/' })}
+            onClick={() =>
+              signOut({ callbackUrl: `${window.location.origin}/` })
+            }
             className="text-red-600 hover:bg-red-50"
           >
             Log out

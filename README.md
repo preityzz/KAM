@@ -3,7 +3,7 @@
 <div align="center">Built with the Next.js App Router</div>
 <br />
 <div align="center">
-<a href="https://kam-7jcoe1jsm-preetitrip14-gmailcoms-projects.vercel.app/">View Demo</a>
+<a href="https://kam-beige.vercel.app/">View Demo</a>
 <video controls src="KAM-Demo.mp4" title="Title"></video>
 <span> 
 </div>

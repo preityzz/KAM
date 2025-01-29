@@ -1,19 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { RestaurantLead } from '@/types/restaurant-type';
-import { useSession } from 'next-auth/react'; 
+import { useSession } from 'next-auth/react';
 const API_URL = '/api/restaurants';
-
-export const QUERY_KEYS = {
-  restaurants: ['restaurants'] as const,
-  restaurant: (id: number) => ['restaurants', id] as const
-};
-
-
-const appendUserId = (body: object, userId: string) => ({
-  ...body,
-  userId
-});
 
 interface Restaurant {
   id: number;
@@ -25,39 +14,59 @@ interface Restaurant {
   createdAt: string;
   updatedAt: string;
 }
+interface FormValues {
+  name: string;
+  address: string;
+  phone: string;
+  status: string;
+}
 
-export const fetchPoc = async (id: number, userId: string) => {
-  try {
-    const response = await fetch(`/api/contacts/${id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ userId })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to fetch all leads');
-    }
-
-    return await response.json();
-  } catch (error) {
-    return {
-      error: true,
-      message: 'An unexpected error occurred'
-    };
-  }
+export const QUERY_KEYS = {
+  restaurants: ['restaurants'] as const,
+  restaurant: (id: number) => ['restaurants', id] as const
 };
 
+const appendUserId = (body: object, userId: string) => ({
+  ...body,
+  userId
+});
+
+// function that are used inside those hooks
+
+// export const fetchPoc = async (id: number, userId: string) => {
+//   try {
+//     const response = await fetch(`/api/contacts/${id}`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify({ userId })
+//     });
+
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       throw new Error(errorData.message || 'Failed to fetch all leads');
+//     }
+
+//     return await response.json();
+//   } catch (error) {
+//     return {
+//       error: true,
+//       message: 'An unexpected error occurred'
+//     };
+//   }
+// };
+
 async function fetchRestaurants(
-  userId: string | undefined
+  userId: string | undefined,
 ): Promise<Restaurant[]> {
   if (!userId) {
     throw new Error('User ID is required');
   }
 
-  const response = await fetch(`${API_URL}?userId=${userId}`);
+  let url = `${API_URL}?userId=${userId}`;
+
+  const response = await fetch(url);
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to fetch restaurants');
@@ -106,7 +115,13 @@ async function deleteRestaurant(id: number, userId: string) {
   return response.json();
 }
 
-export function useRestaurants(userId?: string) {
+// Hooks for fetching and Updating and deleting operations
+interface useRestaurantsParams {
+  userId?: string;
+  
+}
+
+export function useRestaurants({ userId}: useRestaurantsParams) {
   return useQuery<Restaurant[], Error>({
     queryKey: ['restaurants', userId],
     queryFn: async () => {
@@ -117,11 +132,8 @@ export function useRestaurants(userId?: string) {
       return response;
     },
     enabled: !!userId,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60,
     retry: 2
-    // onError: (error) => {
-    //   console.error('Error fetching restaurants:', error);
-    // }
   });
 }
 
@@ -196,12 +208,6 @@ export function useAddRestaurant() {
       toast.error('Failed to add restaurant');
     }
   });
-}
-interface FormValues {
-  name: string;
-  address: string;
-  phone: string;
-  status: string;
 }
 
 export const useCreateRestaurantLead = () => {

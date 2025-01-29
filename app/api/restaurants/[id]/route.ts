@@ -1,4 +1,4 @@
-import {prisma} from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -8,6 +8,7 @@ const restaurantSchema = z.object({
   phone: z.string().min(10, 'Phone must be at least 10 characters'),
   status: z.enum(['active', 'pending', 'inactive'])
 });
+
 
 export async function GET(request: Request) {
   try {
@@ -50,19 +51,17 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = params?.id;
+    const restrauntId = params?.id;
 
-    if (!id || isNaN(Number(id))) {
+    if (!restrauntId || isNaN(Number(restrauntId))) {
       return NextResponse.json(
         { error: 'Invalid restaurant ID' },
         { status: 400 }
       );
     }
 
-    const restaurantId = Number(id);
-
     const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId }
+      where: { id: parseInt(restrauntId) }
     });
 
     if (!restaurant) {
@@ -71,9 +70,8 @@ export async function DELETE(
         { status: 404 }
       );
     }
-
     await prisma.restaurant.delete({
-      where: { id: restaurantId }
+      where: { id: parseInt(restrauntId) }
     });
 
     return NextResponse.json(

@@ -13,15 +13,17 @@ import {
 import { useSession } from 'next-auth/react';
 import { TodayCalls } from './today-calls';
 import BarGraph from './bar-graph';
-import RecentSales from './non-performing';
 import PageContainer from '@/components/layout/page-container';
+import MetricCard from './metric-card';
+import { Badge } from '@/components/ui/badge';
+import NonPerformingRestaurants from './non-performing';
 
 export default function OverViewPage() {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
   const { data: restaurants = [], isLoading: isLoadingRestaurants } =
-    useRestaurants(userId || '');
+    useRestaurants({ userId: userId || '' });
   const { data: orders = [], isLoading: isLoadingOrders } = useOrders(
     userId || ''
   );
@@ -97,7 +99,7 @@ export default function OverViewPage() {
         </div>
 
         {/* Analytics and Activity Section */}
-        <div className="grid gap-6 lg:grid-cols-7">
+        <div className="grid gap-6 lg:grid-cols-7  ">
           {/* Graph Section */}
           <Card className="col-span-4">
             <CardHeader>
@@ -110,13 +112,15 @@ export default function OverViewPage() {
           </Card>
 
           {/* Activity Feed */}
-          <Card className="col-span-3">
-            <CardHeader>
+          <Card className="col-span-4 lg:col-span-3">
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Non-Performing Restaurants</CardTitle>
-              <CardDescription>Restaurants needing attention</CardDescription>
+              <Badge variant="destructive" className="p-2 text-xs">
+                Requires Attention
+              </Badge>
             </CardHeader>
             <CardContent>
-              <RecentSales />
+              <NonPerformingRestaurants />
             </CardContent>
           </Card>
         </div>
@@ -141,36 +145,4 @@ export default function OverViewPage() {
   );
 }
 
-// Metric Card Component
-function MetricCard({
-  title,
-  value,
-  description,
-  icon,
-  isLoading
-}: {
-  title: string;
-  value: string | number;
-  description: string;
-  icon: React.ReactNode;
-  isLoading: boolean;
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <div className="text-muted-foreground">{icon}</div>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="h-8 w-24 animate-pulse rounded bg-muted" />
-        ) : (
-          <>
-            <div className="text-2xl font-bold text-[#084C61]">{value}</div>
-            <p className="text-xs text-muted-foreground">{description}</p>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+

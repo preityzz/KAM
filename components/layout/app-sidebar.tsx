@@ -8,7 +8,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
- 
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -141,7 +140,7 @@ export default function AppSidebar() {
                       alt={session?.user?.name || ''}
                     />
                     <AvatarFallback className="rounded-lg">
-                      {session?.user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
+                      {session?.user?.email?.slice(0, 2)?.toUpperCase() || 'AD'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -169,8 +168,8 @@ export default function AppSidebar() {
                         alt={session?.user?.name || ''}
                       />
                       <AvatarFallback className="rounded-lg">
-                        {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                          'CN'}
+                        {session?.user?.email?.slice(0, 2)?.toUpperCase() ||
+                          'AD'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">

@@ -9,25 +9,32 @@ import { Plus, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRestaurants } from '@/app/queries/restaurants';
-import { RestaurantLead } from '@/types/restaurant-type';
+
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import RestaurantLeadTable from './table';
+import RestaurantLeadTable from '.';
+import { useMemo } from 'react';
 
 export default function RestaurantLeadListingPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const userId = session?.user?.id;
-  const { data: rawLeads, isLoading, error } = useRestaurants(userId);
+  const { data: rawLeads, isLoading, error } = useRestaurants({ userId });
 
-  if (status === 'unauthenticated') {
-    redirect('/signin');
-  }
+  const restaurants = useMemo(() => {
+    return (
+      rawLeads?.map((lead) => ({
+        ...lead,
+        email: (lead as any).email || '',
+        contacts: (lead as any).contacts || [],
+        assignedKAM: (lead as any).assignedKAM || ''
+      })) || []
+    );
+  }, [rawLeads]);
 
   if (isLoading) {
     return (
       <PageContainer>
         <div className="flex min-h-screen items-center justify-center">
-          <Loader className="h-8 w-8 animate-spin  text-[#084C61]" />
+          <Loader className="h-8 w-8 animate-spin text-[#084C61]" />
         </div>
       </PageContainer>
     );
@@ -43,14 +50,6 @@ export default function RestaurantLeadListingPage() {
     );
   }
 
-  const restaurants: RestaurantLead[] =
-    rawLeads?.map((lead) => ({
-      ...lead,
-      email: (lead as any).email || '',
-      contacts: (lead as any).contacts || [],
-      assignedKAM: (lead as any).assignedKAM || ''
-    })) || [];
-
   const totalLeads = restaurants.length;
 
   return (
@@ -61,13 +60,10 @@ export default function RestaurantLeadListingPage() {
             title={`Restaurant Leads (${totalLeads})`}
             description="Manage restaurant leads and track their status"
           />
-          <Link
-            href="/dashboard/restaurantLeads/new"
-            className={cn(buttonVariants({ variant: 'default' }))}
-          >
+          <Link href="/dashboard/restaurantLeads/addlead">
             <Button
               variant="default"
-              className="bg-[#084C61] text-white transition-colors hover:bg-[#084C61]/90"
+              className={cn(buttonVariants({ variant: 'default' }))}
             >
               <Plus className="mr-2 h-4 w-4" />
               Add New Lead

@@ -5,8 +5,8 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/app/queries/order';
 import { Loader } from 'lucide-react';
-import OrderTable from './order-table';
-import { Order } from './order-table/columns';
+import OrderTable from './table';
+import { Order } from './columns';
 import { useSession } from 'next-auth/react';
 
 export default function OrderListingPage() {

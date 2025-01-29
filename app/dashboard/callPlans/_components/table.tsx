@@ -1,4 +1,3 @@
-
 'use client';
 
 import { DataTable } from '@/components/ui/table/data-table';

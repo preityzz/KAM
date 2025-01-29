@@ -19,11 +19,9 @@ export default function KBar({ children }: { children: React.ReactNode }) {
     router.push(url);
   };
 
- 
   const actions = useMemo(
     () =>
       navItems.flatMap((navItem) => {
-      
         const baseAction =
           navItem.url !== '#'
             ? {
@@ -49,10 +47,9 @@ export default function KBar({ children }: { children: React.ReactNode }) {
             perform: () => navigateTo(childItem.url)
           })) ?? [];
 
-     
         return baseAction ? [baseAction, ...childActions] : childActions;
       }),
-    [navigateTo]
+    []
   );
 
   return (

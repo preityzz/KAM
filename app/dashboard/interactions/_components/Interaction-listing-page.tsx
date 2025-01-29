@@ -5,7 +5,7 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { useInteractions } from '@/app/queries/interaction';
 import { Loader } from 'lucide-react';
-import InteractionTable from './interaction-table';
+import InteractionTable from './table';
 import { redirect } from 'next/navigation';
 import { Interaction } from '@/types/interaction-type';
 
@@ -43,7 +43,6 @@ export default function InteractionListingPage() {
       </PageContainer>
     );
   }
-
 
   return (
     <PageContainer scrollable>

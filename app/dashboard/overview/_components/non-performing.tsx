@@ -1,4 +1,3 @@
-
 'use client';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +13,7 @@ export default function NonPerformingRestaurants() {
   const userId = session?.user?.id;
 
   const { data: restaurants = [], isLoading: restaurantsLoading } =
-    useRestaurants(userId);
+    useRestaurants({ userId: userId || '' });
   const { data: orders = [], isLoading: ordersLoading } = useOrders(
     userId || ''
   );
@@ -39,7 +38,7 @@ export default function NonPerformingRestaurants() {
 
   if (!nonPerforming?.length) {
     return (
-      <Alert className="bg-green-50 text-green-600">
+      <Alert className="flex min-h-[200px] items-center justify-center bg-green-50 text-green-600 md:min-h-[300px] lg:min-h-[400px]">
         <ExclamationTriangleIcon className="h-4 w-4" />
         <AlertTitle>All Restaurants Active</AlertTitle>
         <AlertDescription>
@@ -50,31 +49,33 @@ export default function NonPerformingRestaurants() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className=" h-[400px] w-full space-y-2 overflow-y-auto px-1">
       {nonPerforming.map((restaurant) => (
         <Card
           key={restaurant.id}
-          className="border-l-4 border-l-red-500 bg-red-50"
+          className="w-full border-l-4 border-l-red-500 bg-red-50"
         >
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="space-y-2">
+          <CardContent className="flex w-full items-center justify-between p-3">
+            <div className="w-full space-y-2">
               <div className="flex items-center gap-2">
                 <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />
-                <p className="font-medium text-red-700">{restaurant.name}</p>
+                <p className="fontsemibold text-sm text-gray-800">
+                  {restaurant.name}
+                </p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-red-600">
-                <Badge variant="outline" className="border-red-200 bg-red-100">
+              <div className="flex w-full items-center gap-2 text-[11px] tracking-wide text-red-600">
+                <Badge
+                  variant="outline"
+                  className="border-red-200 bg-red-100/80 px-2 py-0 text-[10px] font-medium tracking-wider transition-colors hover:bg-red-100"
+                >
                   Inactive
                 </Badge>
-                <span>•</span>
-                <span>No Orders</span>
-                <span>•</span>
-                <span>Last Activity: Never</span>
+                <span className="text-red-400/70">•</span>
+                <span className="font-medium ">No Orders</span>
+                <span className="text-red-400/70">•</span>
+                <span className="font-medium">Last Activity: Never</span>
               </div>
             </div>
-            <Badge variant="destructive" className="text-xs">
-              Requires Attention
-            </Badge>
           </CardContent>
         </Card>
       ))}

@@ -1,12 +1,11 @@
 'use client';
-
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { useCallPlans } from '@/app/queries/callPlans';
 import { Loader } from 'lucide-react';
-import CallPlanTable from './callPlans-table';
-import { CallPlan } from './callPlans-table/columns';
+import CallPlanTable from './table';
+import { CallPlan } from './columns';
 import { useSession } from 'next-auth/react';
 
 export default function CallPlanListingPage() {

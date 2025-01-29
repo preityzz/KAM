@@ -13,7 +13,6 @@ import { useOrders } from '@/app/queries/order';
 import { useRestaurants } from '@/app/queries/restaurants';
 import { useSession } from 'next-auth/react';
 
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,7 +29,7 @@ export default function BarGraph() {
     userId || ''
   );
   const { data: restaurants = [], isLoading: restaurantsLoading } =
-    useRestaurants(userId || '');
+    useRestaurants({ userId: userId || '' });
 
   if (ordersLoading || restaurantsLoading) {
     return (
@@ -128,7 +127,7 @@ export default function BarGraph() {
         <CardTitle>Restaurant Performance</CardTitle>
       </CardHeader>
       <CardContent>
-        <Bar data={chartData} options={options} height={300} />
+        <Bar data={chartData} options={options} height={190} />
       </CardContent>
     </Card>
   );

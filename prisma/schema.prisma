@@ -15,14 +15,15 @@ enum Role {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  email      String       @unique
-  password   String
-  role       Role         @default(USER)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  isVerified Boolean      @default(false)
-  restaurants Restaurant[] // One-to-many: a user can have many restaurants
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  role        Role         @default(USER)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  isVerified  Boolean      @default(false)
+  restaurants Restaurant[]
+  // One-to-many: a user can have many restaurants
 }
 
 model Restaurant {
@@ -30,22 +31,22 @@ model Restaurant {
   name         String
   address      String
   phone        String
-  status       String // E.g., "new", "contacted", "converted"
+  status       String    
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  userId       Int           // Foreign key to User
+  userId       Int // Foreign key to User
   user         User          @relation(fields: [userId], references: [id])
   contacts     Contact[]
   interactions Interaction[]
-  callPlan     CallPlan?     // One-to-one: a restaurant can have one call plan
+  callPlan     CallPlan? // One-to-one: a restaurant can have one call plan
   performance  Performance?
-  orders       Order[]       // One-to-many: a restaurant can have many orders
+  orders       Order[] // One-to-many: a restaurant can have many orders
 }
 
 model Contact {
   id           Int        @id @default(autoincrement())
   name         String
-  role         String     // E.g., "Owner", "Manager"
+  role         String // E.g., "Owner", "Manager"
   email        String?
   phone        String
   restaurantId Int
@@ -54,8 +55,8 @@ model Contact {
 
 model Interaction {
   id              Int        @id @default(autoincrement())
-  interactionType String     // e.g., "call", "order", "meeting"
-  details         String?    // Optional details
+  interactionType String // e.g., "call", "order", "meeting"
+  details         String? // Optional details
   interactionDate DateTime
   restaurantId    Int
   restaurant      Restaurant @relation(fields: [restaurantId], references: [id])
@@ -65,7 +66,7 @@ model CallPlan {
   id           Int        @id @default(autoincrement())
   restaurantId Int        @unique
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  frequency    Int        // Days between calls
+  frequency    Int // Days between calls
   lastCallDate DateTime?
   nextCallDate DateTime
 }
@@ -76,17 +77,17 @@ model Performance {
   restaurant       Restaurant @relation(fields: [restaurantId], references: [id])
   totalOrders      Int        @default(0)
   lastOrder        DateTime?
-  performanceScore Float      // Calculated metric
-  orders           Order[]    // Relation to multiple orders
+  performanceScore Float // Calculated metric
+  orders           Order[] // Relation to multiple orders
 }
 
 model Order {
   id            Int          @id @default(autoincrement())
-  restaurantId  Int          // Link to the restaurant
+  restaurantId  Int // Link to the restaurant
   restaurant    Restaurant   @relation(fields: [restaurantId], references: [id])
-  orderDate     DateTime     // Date and time when the order was placed
-  orderValue    Float        // Total value of the order
-  orderStatus   String       // E.g., "Pending", "Completed", "Shipped"
-  performanceId Int?         // Link to performance (optional, if the order is part of a performance metric)
+  orderDate     DateTime // Date and time when the order was placed
+  orderValue    Float // Total value of the order
+  orderStatus   String // E.g., "Pending", "Completed", "Shipped"
+  performanceId Int? // Link to performance (optional, if the order is part of a performance metric)
   performance   Performance? @relation(fields: [performanceId], references: [id])
 }

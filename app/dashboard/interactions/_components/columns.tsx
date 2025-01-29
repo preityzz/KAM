@@ -20,7 +20,7 @@ export type Interaction = {
 
 export const columns: ColumnDef<Interaction>[] = [
   {
-    accessorKey: 'restaurant.name', 
+    accessorKey: 'restaurant.name',
     header: 'Restaurant Name',
     cell: ({ row }) => {
       const restaurant = row.original.restaurant;
