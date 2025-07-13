@@ -34,7 +34,7 @@ export default function UserAuthForm() {
   const [loading, startTransition] = useTransition();
   const defaultValues = {
     email: 'admin@example.com',
-    password: '1234'      // yeh default value hai agar for mai update krne to backend mai nya data jyega
+    password: '123456'      
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
